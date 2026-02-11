@@ -43,6 +43,14 @@ button {
 
 #qrcode {
   margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+#descargar {
+  display: none;
+  background: #007bff;
+  margin-top: 10px;
 }
 </style>
 </head>
@@ -56,15 +64,20 @@ button {
   <button onclick="generarQR()">Generar QR</button>
 
   <div id="qrcode"></div>
+
+  <button id="descargar" onclick="descargarQR()">⬇️ Descargar QR (HQ)</button>
 </div>
 
 <!-- LIBRERÍA REAL -->
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
 <script>
+let qrCanvas = null;
+
 function generarQR() {
   const texto = document.getElementById("texto").value.trim();
   const contenedor = document.getElementById("qrcode");
+  const btnDescargar = document.getElementById("descargar");
 
   if (!texto) {
     alert("Ingresa un link o texto");
@@ -72,15 +85,37 @@ function generarQR() {
   }
 
   contenedor.innerHTML = "";
+  btnDescargar.style.display = "none";
 
-  new QRCode(contenedor, {
+  // Generamos QR en ALTA RESOLUCIÓN
+  const qr = new QRCode(contenedor, {
     text: texto,
-    width: 220,
-    height: 220,
+    width: 1024,
+    height: 1024,
     colorDark: "#000000",
     colorLight: "#ffffff",
     correctLevel: QRCode.CorrectLevel.H
   });
+
+  // Esperamos a que el canvas exista
+  setTimeout(() => {
+    qrCanvas = contenedor.querySelector("canvas");
+    if (qrCanvas) {
+      // Escalamos visualmente (sin perder calidad)
+      qrCanvas.style.width = "220px";
+      qrCanvas.style.height = "220px";
+      btnDescargar.style.display = "block";
+    }
+  }, 100);
+}
+
+function descargarQR() {
+  if (!qrCanvas) return;
+
+  const link = document.createElement("a");
+  link.href = qrCanvas.toDataURL("image/png");
+  link.download = "codigo_qr.png";
+  link.click();
 }
 </script>
 </body>
