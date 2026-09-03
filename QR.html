@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Generador de Código QR</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.container {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+input, button {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+button {
+  background: black;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#qrcode {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+#descargar {
+  display: none;
+  background: #007bff;
+  margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h2>📱 Generador de QR</h2>
+
+  <input id="texto" type="text" placeholder="Pega el link aquí">
+
+  <button onclick="generarQR()">Generar QR</button>
+
+  <div id="qrcode"></div>
+
+  <button id="descargar" onclick="descargarQR()">⬇️ Descargar QR (HQ)</button>
+</div>
+
+<!-- LIBRERÍA REAL -->
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+<script>
+let qrCanvas = null;
+
+function generarQR() {
+  const texto = document.getElementById("texto").value.trim();
+  const contenedor = document.getElementById("qrcode");
+  const btnDescargar = document.getElementById("descargar");
+
+  if (!texto) {
+    alert("Ingresa un link o texto");
+    return;
+  }
+
+  contenedor.innerHTML = "";
+  btnDescargar.style.display = "none";
+
+  // Generamos QR en ALTA RESOLUCIÓN
+  const qr = new QRCode(contenedor, {
+    text: texto,
+    width: 1024,
+    height: 1024,
+    colorDark: "#000000",
+    colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.H
+  });
+
+  // Esperamos a que el canvas exista
+  setTimeout(() => {
+    qrCanvas = contenedor.querySelector("canvas");
+    if (qrCanvas) {
+      // Escalamos visualmente (sin perder calidad)
+      qrCanvas.style.width = "220px";
+      qrCanvas.style.height = "220px";
+      btnDescargar.style.display = "block";
+    }
+  }, 100);
+}
+
+function descargarQR() {
+  if (!qrCanvas) return;
+
+  const link = document.createElement("a");
+  link.href = qrCanvas.toDataURL("image/png");
+  link.download = "codigo_qr.png";
+  link.click();
+}
+</script>
+</body>
+</html>
