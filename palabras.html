@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contador de palabras</title>
+<style>
+:root { --bg:#f8f9fa; --panel:#fff; --border:#dadce0; --text:#202124; --muted:#5f6368; --blue:#4285f4; }
+* { box-sizing:border-box; }
+body { margin:0; min-height:100vh; font-family:Arial, Helvetica, sans-serif; color:var(--text); background:linear-gradient(180deg,#fff 0%,var(--bg) 100%); padding:16px; }
+.wrap { width:min(1100px,100%); margin:0 auto; }
+.back { display:inline-flex; gap:8px; text-decoration:none; color:var(--text); margin-bottom:14px; font-weight:700; }
+.panel { background:var(--panel); border:1px solid var(--border); border-radius:24px; box-shadow:0 1px 3px rgba(60,64,67,.12), 0 6px 20px rgba(60,64,67,.08); padding:22px; }
+.hero { display:grid; gap:6px; margin-bottom:18px; }
+h1 { margin:0; font-size:clamp(1.8rem,4vw,3rem); }
+p { margin:0; color:var(--muted); }
+.layout { display:grid; grid-template-columns:1fr 320px; gap:18px; align-items:start; }
+.card { border:1px solid var(--border); border-radius:20px; padding:16px; background:#fff; }
+label { display:block; font-weight:700; margin:0 0 8px; }
+textarea, button { width:100%; border-radius:14px; border:1px solid var(--border); padding:12px 14px; font-size:16px; }
+textarea { min-height:340px; resize:vertical; outline:none; }
+textarea:focus { border-color:rgba(66,133,244,.55); box-shadow:0 0 0 3px rgba(66,133,244,.12); }
+button { cursor:pointer; font-weight:700; margin-top:10px; }
+.primary { background:var(--blue); color:white; border:none; }
+.secondary { background:#f8f9fa; color:var(--text); }
+.stats { display:grid; gap:12px; }
+.stat { border:1px solid var(--border); border-radius:18px; padding:14px; background:#fafafa; }
+.stat strong { display:block; font-size:clamp(1.5rem,4vw,2.2rem); }
+.stat span { color:var(--muted); }
+.note { margin-top:10px; color:var(--muted); font-size:.92rem; }
+@media (max-width: 900px) { .layout { grid-template-columns:1fr; } }
+@media (max-width: 520px) { body { padding:10px; } .panel { padding:16px; border-radius:18px; } textarea, button { font-size:15px; } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="index.html">← Volver al menú</a>
+    <section class="panel">
+      <div class="hero">
+        <h1>Contador de palabras</h1>
+        <p>Escribe o pega texto y revisa las estadísticas en tiempo real.</p>
+      </div>
+
+      <div class="layout">
+        <div class="card">
+          <label for="texto">Texto</label>
+          <textarea id="texto" placeholder="Escribe o pega tu texto aquí...">Este es un ejemplo de texto para contar palabras, letras, líneas y caracteres.</textarea>
+          <button class="secondary" type="button" onclick="limpiar()">Limpiar</button>
+        </div>
+
+        <div class="stats">
+          <div class="stat"><strong id="palabras">0</strong><span>palabras</span></div>
+          <div class="stat"><strong id="caracteres">0</strong><span>caracteres</span></div>
+          <div class="stat"><strong id="sinEspacios">0</strong><span>caracteres sin espacios</span></div>
+          <div class="stat"><strong id="lineas">0</strong><span>líneas</span></div>
+          <div class="stat"><strong id="oraciones">0</strong><span>oraciones</span></div>
+        </div>
+      </div>
+      <div class="note">Se actualiza automáticamente mientras escribes.</div>
+    </section>
+  </div>
+
+  <script>
+    const texto = document.getElementById('texto');
+    const palabras = document.getElementById('palabras');
+    const caracteres = document.getElementById('caracteres');
+    const sinEspacios = document.getElementById('sinEspacios');
+    const lineas = document.getElementById('lineas');
+    const oraciones = document.getElementById('oraciones');
+
+    function actualizar() {
+      const value = texto.value;
+      const limpio = value.trim();
+      const lista = limpio ? limpio.split(/\s+/).filter(Boolean) : [];
+      const frases = limpio ? limpio.split(/[.!?]+/).map((item) => item.trim()).filter(Boolean) : [];
+
+      palabras.textContent = lista.length;
+      caracteres.textContent = value.length;
+      sinEspacios.textContent = value.replace(/\s/g, '').length;
+      lineas.textContent = value ? value.split(/\n/).length : 0;
+      oraciones.textContent = frases.length;
+    }
+
+    function limpiar() {
+      texto.value = '';
+      actualizar();
+      texto.focus();
+    }
+
+    texto.addEventListener('input', actualizar);
+    actualizar();
+  </script>
+</body>
+</html>

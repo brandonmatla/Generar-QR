@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de sopa de letras</title>
+<style>
+:root {
+  --bg: #f8f9fa;
+  --panel: #ffffff;
+  --border: #dadce0;
+  --text: #202124;
+  --muted: #5f6368;
+  --blue: #4285f4;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text);
+  background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+  padding: 16px;
+}
+
+.wrap { width: min(1180px, 100%); margin: 0 auto; }
+.back { display: inline-flex; gap: 8px; align-items: center; text-decoration: none; color: var(--text); margin-bottom: 14px; font-weight: 700; }
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: 0 1px 3px rgba(60, 64, 67, 0.12), 0 6px 20px rgba(60, 64, 67, 0.08);
+  padding: 22px;
+}
+
+.hero { display: grid; gap: 6px; margin-bottom: 18px; }
+h1 { margin: 0; font-size: clamp(1.8rem, 4vw, 3rem); }
+p { margin: 0; color: var(--muted); }
+
+.layout { display: grid; grid-template-columns: 320px 1fr; gap: 18px; align-items: start; }
+.card { border: 1px solid var(--border); border-radius: 20px; padding: 16px; background: #fff; }
+
+label { display: block; font-weight: 700; margin: 0 0 8px; }
+textarea, input, button { width: 100%; border-radius: 14px; border: 1px solid var(--border); padding: 12px 14px; font-size: 16px; }
+textarea { min-height: 240px; resize: vertical; outline: none; }
+textarea:focus, input:focus { border-color: rgba(66, 133, 244, 0.55); box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.12); }
+button { cursor: pointer; font-weight: 700; margin-top: 10px; }
+.primary { background: var(--blue); color: white; border: none; }
+.secondary { background: #f8f9fa; color: var(--text); }
+
+.grid-wrap { display: grid; gap: 14px; }
+.grid {
+  display: grid;
+  gap: 2px;
+  overflow: auto;
+  padding: 10px;
+  background: #f1f3f4;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+}
+.cell {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  border-radius: 8px;
+  font-weight: 700;
+  font-family: "Courier New", monospace;
+}
+.word-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.word-tag { padding: 6px 10px; border-radius: 999px; background: #e8f0fe; color: var(--blue); font-weight: 700; font-size: 0.84rem; }
+.note { margin-top: 10px; color: var(--muted); font-size: 0.92rem; }
+
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+@media (max-width: 520px) { body { padding: 10px; } .panel { padding: 16px; border-radius: 18px; } textarea, input, button { font-size: 15px; } }
+
+@media print {
+  body { background: #fff; padding: 0; }
+  .back, .card:first-child, button { display: none !important; }
+  .panel { box-shadow: none; border: none; padding: 0; }
+  .layout { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="index.html">← Volver al menú</a>
+    <section class="panel">
+      <div class="hero">
+        <h1>Generador de sopa de letras</h1>
+        <p>Escribe tus palabras y genera una sopa de letras lista para descargar en PDF con respuestas abajo.</p>
+      </div>
+
+      <div class="layout">
+        <div class="card">
+          <label for="palabras">Palabras</label>
+          <textarea id="palabras" placeholder="JAVA\nSPRING\nMYSQL\nHTML\nCSS\nDOCKER\nGITHUB">JAVA
+SPRING
+MYSQL
+HTML
+CSS
+DOCKER
+GITHUB</textarea>
+          <label for="tamano" style="margin-top:12px;">Tamaño de la sopa</label>
+          <input id="tamano" type="number" min="8" max="24" value="12">
+          <button class="primary" type="button" onclick="generarSopa()">🧩 Generar sopa de letras</button>
+          <button class="secondary" type="button" onclick="window.print()">Descargar</button>
+          <div class="note">Tip: usa palabras en mayúsculas para una mejor presentación.</div>
+        </div>
+
+        <div class="grid-wrap">
+          <div class="card">
+            <div class="word-list" id="listaPalabras"></div>
+          </div>
+          <div class="card">
+            <div class="grid" id="sopaGrid"></div>
+          </div>
+          <div class="card">
+            <h2 style="margin:0 0 10px; font-size:1.15rem;">Respuestas</h2>
+            <div class="grid" id="respuestasGrid"></div>
+            <div class="note">Las palabras marcadas en azul muestran la solución.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const directions = [
+      [1, 0], [0, 1], [1, 1], [-1, 0], [0, -1], [-1, -1], [1, -1], [-1, 1]
+    ];
+
+    function randomLetter() {
+      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      return letters[Math.floor(Math.random() * letters.length)];
+    }
+
+    function shuffle(array) {
+      return [...array].sort(() => Math.random() - 0.5);
+    }
+
+    function canPlace(grid, word, row, col, dx, dy) {
+      const size = grid.length;
+      for (let i = 0; i < word.length; i++) {
+        const x = row + i * dx;
+        const y = col + i * dy;
+        if (x < 0 || y < 0 || x >= size || y >= size) return false;
+        const current = grid[x][y];
+        if (current !== '' && current !== word[i]) return false;
+      }
+      return true;
+    }
+
+    function placeWord(grid, word, placements) {
+      const size = grid.length;
+      const options = shuffle(directions);
+
+      for (const [dx, dy] of options) {
+        for (let attempt = 0; attempt < 300; attempt++) {
+          const row = Math.floor(Math.random() * size);
+          const col = Math.floor(Math.random() * size);
+          if (canPlace(grid, word, row, col, dx, dy)) {
+            const positions = [];
+            for (let i = 0; i < word.length; i++) {
+              const x = row + i * dx;
+              const y = col + i * dy;
+              grid[x][y] = word[i];
+              positions.push([x, y]);
+            }
+            placements.push({ word, positions });
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    function generarSopa() {
+      const palabras = document.getElementById('palabras').value
+        .split(/\n|,/) 
+        .map((p) => p.trim().toUpperCase())
+        .filter(Boolean);
+      const size = Math.max(8, Math.min(24, parseInt(document.getElementById('tamano').value, 10) || 12));
+      const grid = Array.from({ length: size }, () => Array(size).fill(''));
+      const placements = [];
+      const sorted = [...palabras].sort((a, b) => b.length - a.length);
+
+      sorted.forEach((word) => placeWord(grid, word, placements));
+
+      for (let row = 0; row < size; row++) {
+        for (let col = 0; col < size; col++) {
+          if (!grid[row][col]) grid[row][col] = randomLetter();
+        }
+      }
+
+      const gridEl = document.getElementById('sopaGrid');
+      const listEl = document.getElementById('listaPalabras');
+      const answersEl = document.getElementById('respuestasGrid');
+
+      gridEl.style.gridTemplateColumns = `repeat(${size}, minmax(0, 1fr))`;
+      gridEl.innerHTML = grid.map((row) => row.map((cell) => `<div class="cell">${cell}</div>`).join('')).join('');
+      listEl.innerHTML = palabras.map((word) => `<span class="word-tag">${word}</span>`).join('');
+
+      const highlighted = new Set(placements.flatMap((entry) => entry.positions.map(([x, y]) => `${x}-${y}`)));
+      answersEl.style.gridTemplateColumns = `repeat(${size}, minmax(0, 1fr))`;
+      answersEl.innerHTML = grid.map((row, rowIndex) => row.map((cell, colIndex) => {
+        const active = highlighted.has(`${rowIndex}-${colIndex}`);
+        return `<div class="cell" style="background:${active ? '#e8f0fe' : '#ffffff'}; color:${active ? '#174ea6' : '#202124'};">${cell}</div>`;
+      }).join('')).join('');
+    }
+
+    generarSopa();
+  </script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de exámenes</title>
+<style>
+:root { --bg:#f8f9fa; --panel:#fff; --border:#dadce0; --text:#202124; --muted:#5f6368; --blue:#4285f4; }
+* { box-sizing: border-box; }
+body { margin:0; min-height:100vh; font-family:Arial, Helvetica, sans-serif; color:var(--text); background:linear-gradient(180deg,#fff 0%,var(--bg) 100%); padding:16px; }
+.wrap { width:min(1180px,100%); margin:0 auto; }
+.back { display:inline-flex; gap:8px; text-decoration:none; color:var(--text); margin-bottom:14px; font-weight:700; }
+.panel { background:var(--panel); border:1px solid var(--border); border-radius:24px; box-shadow:0 1px 3px rgba(60,64,67,.12), 0 6px 20px rgba(60,64,67,.08); padding:22px; }
+.hero { display:grid; gap:6px; margin-bottom:18px; }
+h1 { margin:0; font-size:clamp(1.8rem,4vw,3rem); }
+p { margin:0; color:var(--muted); }
+.layout { display:grid; grid-template-columns: 360px 1fr; gap:18px; align-items:start; }
+.card { border:1px solid var(--border); border-radius:20px; padding:16px; background:#fff; }
+label { display:block; font-weight:700; margin:0 0 8px; }
+textarea, button { width:100%; border-radius:14px; border:1px solid var(--border); padding:12px 14px; font-size:16px; }
+textarea { min-height: 420px; resize:vertical; outline:none; }
+textarea:focus { border-color:rgba(66,133,244,.55); box-shadow:0 0 0 3px rgba(66,133,244,.12); }
+button { cursor:pointer; font-weight:700; margin-top:10px; }
+.primary { background:var(--blue); color:white; border:none; }
+.secondary { background:#f8f9fa; color:var(--text); }
+.output { display:grid; gap:16px; }
+.sheet { border:1px solid var(--border); border-radius:20px; padding:16px; background:#fafafa; }
+.sheet h2 { margin:0 0 10px; font-size:1.2rem; }
+.question { padding:12px 0; border-top:1px solid #eceff1; }
+.question:first-child { border-top:none; }
+.options { margin-top:8px; display:grid; gap:8px; }
+.option { display:flex; gap:10px; align-items:flex-start; }
+.option span { display:inline-flex; min-width:22px; }
+.answer-line { font-weight:700; }
+.note { margin-top:10px; color:var(--muted); font-size:.92rem; }
+@media (max-width: 940px) { .layout { grid-template-columns:1fr; } textarea { min-height:260px; } }
+@media (max-width: 520px) { body { padding:10px; } .panel { padding:16px; border-radius:18px; } textarea, button { font-size:15px; } }
+@media print { body { background:#fff; padding:0; } .back, .card:first-child, button { display:none !important; } .panel { box-shadow:none; border:none; padding:0; } .layout { grid-template-columns:1fr; } .sheet { break-inside:avoid; background:#fff; } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="index.html">← Volver al menú</a>
+    <section class="panel">
+      <div class="hero">
+        <h1>Generador de exámenes</h1>
+        <p>Sin IA. Escribe preguntas, opciones y la respuesta correcta; la página genera examen y respuestas.</p>
+      </div>
+
+      <div class="layout">
+        <div class="card">
+          <label for="entrada">Texto del examen</label>
+          <textarea id="entrada">Pregunta 1:
+¿Cuál es la capital de México?
+
+A) Guadalajara
+B) Ciudad de México
+C) Monterrey
+D) Puebla
+
+Respuesta correcta:
+B</textarea>
+          <button class="primary" type="button" onclick="generar()">Generar examen</button>
+          <button class="secondary" type="button" onclick="window.print()">Descargar</button>
+          <div class="note">Usa bloques separados por una línea en blanco. Cada bloque debe incluir pregunta, opciones y respuesta correcta.</div>
+        </div>
+
+        <div class="output">
+          <div class="sheet">
+            <h2>EXAMEN</h2>
+            <div id="examen"></div>
+          </div>
+          <div class="sheet">
+            <h2>RESPUESTAS</h2>
+            <div id="respuestas"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    function parseBlocks(text) {
+      return text.split(/\n\s*\n(?=Pregunta\s*\d+\s*:)/i).map((block) => block.trim()).filter(Boolean);
+    }
+
+    function parseQuestion(block) {
+      const lines = block.split(/\n/).map((line) => line.trim()).filter(Boolean);
+      const answerIndex = lines.findIndex((line) => /^respuesta correcta\s*:/i.test(line));
+      const answer = answerIndex >= 0 ? (lines[answerIndex + 1] || '').trim() : '';
+      const body = answerIndex >= 0 ? lines.slice(0, answerIndex) : lines;
+      const questionLine = body.find((line) => /^pregunta\s*\d+\s*:/i.test(line)) || 'Pregunta';
+      const questionText = body.find((line) => !/^pregunta\s*\d+\s*:/i.test(line) && !/^[A-D]\)/i.test(line)) || '';
+      const options = body.filter((line) => /^[A-D]\)/i.test(line));
+      return { questionLine, questionText, options, answer };
+    }
+
+    function generar() {
+      const texto = document.getElementById('entrada').value.trim();
+      const bloques = parseBlocks(texto);
+      const examenEl = document.getElementById('examen');
+      const respuestasEl = document.getElementById('respuestas');
+
+      if (!bloques.length) {
+        examenEl.innerHTML = '<p>Agrega al menos una pregunta.</p>';
+        respuestasEl.innerHTML = '<p>Agrega al menos una pregunta.</p>';
+        return;
+      }
+
+      const questions = bloques.map(parseQuestion);
+
+      examenEl.innerHTML = questions.map((item, index) => `
+        <div class="question">
+          <div class="answer-line">${index + 1}. ${item.questionText || item.questionLine.replace(/^pregunta\s*\d+\s*:/i, '').trim()}</div>
+          <div class="options">
+            ${item.options.map((option) => `<label class="option"><span>☐</span><span>${option.replace(/^[A-D]\)\s*/i, '')}</span></label>`).join('')}
+          </div>
+        </div>
+      `).join('');
+
+      respuestasEl.innerHTML = questions.map((item, index) => `
+        <div class="question">
+          <div class="answer-line">${index + 1}. ${item.answer || 'Sin respuesta'}</div>
+        </div>
+      `).join('');
+    }
+
+    generar();
+  </script>
+</body>
+</html>
