@@ -6,24 +6,41 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+:root {
+  --bg: #f4f7fb;
+  --panel: #ffffff;
+  --text: #202124;
+  --muted: #5f6368;
+  --border: #e0e3e7;
+  --accent: #1a73e8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: Arial, sans-serif;
-  background: #f4f4f4;
+  background: radial-gradient(circle at top, #ffffff 0%, var(--bg) 58%, #eaf1fb 100%);
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   margin: 0;
+  color: var(--text);
+  padding: 16px;
 }
 
 .container {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
+  position: relative;
+  background: var(--panel);
+  padding: 24px;
+  border-radius: 20px;
   width: 100%;
-  max-width: 400px;
+  max-width: 460px;
   text-align: center;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  box-shadow: 0 10px 30px rgba(60, 64, 67, 0.16);
+  border: 1px solid var(--border);
 }
 
 input, button {
@@ -33,31 +50,113 @@ input, button {
   margin-top: 10px;
 }
 
+.back-link {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  text-decoration: none;
+  background: #f1f3f4;
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.back-link:hover {
+  background: #e8f0fe;
+  border-color: #c6dafc;
+}
+
+h2 {
+  margin: 28px 0 0;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+}
+
+p {
+  color: var(--muted);
+}
+
 button {
-  background: black;
+  background: var(--accent);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
+  font-weight: 700;
 }
 
 #qrcode {
   margin-top: 20px;
   display: flex;
   justify-content: center;
+  align-items: center;
+  min-height: 240px;
 }
 
 #descargar {
   display: none;
-  background: #007bff;
+  background: #0b57d0;
   margin-top: 10px;
+}
+
+input {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  outline: none;
+}
+
+input:focus {
+  border-color: #a8c7fa;
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.12);
+}
+
+canvas, img {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 10px;
+    align-items: flex-start;
+  }
+
+  .container {
+    padding: 18px;
+    border-radius: 16px;
+    margin-top: 18px;
+  }
+
+  .back-link {
+    top: 10px;
+    left: 10px;
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  #qrcode {
+    min-height: 200px;
+  }
+
+  input, button {
+    font-size: 15px;
+  }
 }
 </style>
 </head>
 
 <body>
 <div class="container">
+  <a class="back-link" href="index.html" aria-label="Volver al inicio">←</a>
   <h2>📱 Generador de QR</h2>
+  <p>Genera y descarga tu codigo QR.</p>
 
   <input id="texto" type="text" placeholder="Pega el link aquí">
 

@@ -161,11 +161,24 @@ body {
 	border: 1px solid #dadce0;
 	background: #ffffff;
 	box-shadow: 0 1px 3px rgba(60, 64, 67, 0.12);
+	cursor: pointer;
+	transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
 
 .tool h3 {
 	margin: 0;
 	font-size: 1.05rem;
+}
+
+.tool:hover {
+	transform: translateY(-1px);
+	border-color: #c6dafc;
+	box-shadow: 0 2px 8px rgba(60, 64, 67, 0.14);
+}
+
+.tool:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.18), 0 2px 8px rgba(60, 64, 67, 0.14);
 }
 
 .tag {
@@ -179,30 +192,7 @@ body {
 	font-weight: 700;
 }
 
-.tool a,
-.button {
-	display: inline-flex;
-	justify-content: center;
-	align-items: center;
-	text-decoration: none;
-	cursor: pointer;
-	border-radius: 14px;
-	padding: 12px 14px;
-	border: 1px solid #dadce0;
-	background: #f8f9fa;
-	color: var(--blue);
-	font-weight: 700;
-	transition: transform 0.18s ease, border-color 0.18s ease;
-}
 
-.tool a:hover,
-.button:hover {
-	transform: translateY(-1px);
-	border-color: #c6dafc;
-	background: #f1f3f4;
-}
-
-.tool a:focus-visible,
 .search-row input:focus-visible {
 	outline: none;
 	outline: 3px solid rgba(66, 133, 244, 0.2);
@@ -261,11 +251,6 @@ body {
 		padding: 16px;
 	}
 
-	.tool a,
-	.button {
-		width: 100%;
-	}
-
 	.footer-note {
 		text-align: left;
 	}
@@ -312,13 +297,12 @@ body {
 			</div>
 
 			<div class="tools" id="toolsList">
-				<article class="tool" data-search="qr html codigo qr generador">
+				<article class="tool" data-search="qr html codigo qr generador" role="link" tabindex="0" data-href="QR.html" aria-label="Abrir QR sin vencimiento">
 					<span class="tag">Principal</span>
 					<div>
 						<h3>Generador de QR sin vencimiento</h3>
 						<p class="tool-description">Abre el generador de codigo QR sin vencimiento.</p>
 					</div>
-					<a href="QR.html">Abrir QR sin vencimiento</a>
 				</article>
 			</div>
 
@@ -334,6 +318,13 @@ body {
 		const emptyState = document.getElementById('emptyState');
 		const tools = Array.from(toolsList.querySelectorAll('.tool'));
 
+		function openTool(tool) {
+			const href = tool.dataset.href;
+			if (href) {
+				window.location.href = href;
+			}
+		}
+
 		function updateList(query) {
 			const value = query.trim().toLowerCase();
 			let visible = 0;
@@ -348,6 +339,16 @@ body {
 			count.textContent = visible === 1 ? '1 herramienta' : `${visible} herramientas`;
 			emptyState.style.display = visible ? 'none' : 'block';
 		}
+
+		tools.forEach((tool) => {
+			tool.addEventListener('click', () => openTool(tool));
+			tool.addEventListener('keydown', (event) => {
+				if (event.key === 'Enter' || event.key === ' ') {
+					event.preventDefault();
+					openTool(tool);
+				}
+			});
+		});
 
 		search.addEventListener('input', (event) => updateList(event.target.value));
 		updateList('');
