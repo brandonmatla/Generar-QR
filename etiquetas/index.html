@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de etiquetas</title>
+<style>
+:root {
+  --bg: #f8f9fa;
+  --panel: #ffffff;
+  --border: #dadce0;
+  --text: #202124;
+  --muted: #5f6368;
+  --blue: #4285f4;
+  --shadow: 0 1px 3px rgba(60, 64, 67, 0.12), 0 6px 20px rgba(60, 64, 67, 0.08);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text);
+  background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+  padding: 16px;
+}
+
+.wrap { width: min(1240px, 100%); margin: 0 auto; }
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--text);
+  margin-bottom: 14px;
+  font-weight: 700;
+}
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  padding: 22px;
+}
+.hero { display: grid; gap: 6px; margin-bottom: 18px; }
+h1 { margin: 0; font-size: clamp(1.8rem, 4vw, 3rem); }
+p { margin: 0; color: var(--muted); }
+.layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+.card {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 16px;
+  background: #fff;
+}
+.card h2 {
+  margin: 0 0 12px;
+  font-size: 1.05rem;
+}
+label {
+  display: block;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+input, textarea, select, button {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  font-size: 16px;
+  font-family: inherit;
+}
+textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: rgba(66, 133, 244, 0.55);
+  box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.12);
+}
+button {
+  cursor: pointer;
+  font-weight: 700;
+  transition: transform 0.16s ease, background 0.16s ease;
+}
+button:hover { transform: translateY(-1px); }
+.primary {
+  background: var(--blue);
+  color: #fff;
+  border: none;
+}
+.secondary {
+  background: #f8f9fa;
+  color: var(--text);
+}
+.danger {
+  background: #fce8e6;
+  color: #c5221f;
+  border: 1px solid #f5c2bf;
+}
+.form-grid { display: grid; gap: 12px; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.inline { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.inline > * { width: auto; }
+.switch {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fafafa;
+}
+.switch input { width: auto; }
+.actions { display: grid; gap: 10px; }
+.notice {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.preview-shell {
+  display: grid;
+  gap: 14px;
+}
+.preview-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.preview-toolbar .meta {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.sheet-wrap {
+  background: #f1f3f4;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 14px;
+  overflow: auto;
+}
+.sheet {
+  --label-width: 105mm;
+  --label-height: 52mm;
+  --label-gap: 6mm;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--label-width)), 1fr));
+  gap: var(--label-gap);
+  align-items: start;
+}
+.sheet[data-layout="small"] { --label-width: 70mm; --label-height: 35mm; }
+.sheet[data-layout="medium"] { --label-width: 105mm; --label-height: 52mm; }
+.sheet[data-layout="large"] { --label-width: 148mm; --label-height: 74mm; }
+.sheet[data-layout="custom"] { --label-width: var(--custom-width, 105mm); --label-height: var(--custom-height, 52mm); }
+.label-card {
+  width: 100%;
+  min-height: var(--label-height);
+  background: #fff;
+  border: 1px solid #cfd8dc;
+  border-radius: 16px;
+  padding: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  break-inside: avoid;
+  overflow: hidden;
+}
+.label-card.align-left { justify-content: flex-start; text-align: left; }
+.label-card.align-center { justify-content: center; text-align: center; }
+.label-card.align-right { justify-content: flex-end; text-align: right; }
+.label-main {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+.label-title {
+  font-weight: 800;
+  line-height: 1.1;
+  word-break: break-word;
+}
+.label-sub,
+.label-meta {
+  color: #3c4043;
+  line-height: 1.15;
+  word-break: break-word;
+}
+.label-meta { font-size: 0.88em; color: var(--muted); }
+.label-qr {
+  width: 28mm;
+  height: 28mm;
+  flex: 0 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  display: grid;
+  place-items: center;
+  border: 1px solid #e0e0e0;
+}
+.label-qr img,
+.label-qr canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.preview-helper {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+#hiddenQr {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+}
+.success {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #e6f4ea;
+  color: #137333;
+  border: 1px solid #c7e8d1;
+}
+.error {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #fce8e6;
+  color: #c5221f;
+  border: 1px solid #f5c2bf;
+}
+@media (max-width: 980px) {
+  .layout { grid-template-columns: 1fr; }
+}
+@media (max-width: 720px) {
+  body { padding: 10px; }
+  .panel { padding: 16px; border-radius: 18px; }
+  .two-col,
+  .three-col { grid-template-columns: 1fr; }
+  .label-card { flex-direction: column; align-items: flex-start; }
+  .label-qr { width: 24mm; height: 24mm; }
+}
+@media print {
+  @page { size: A4; margin: 10mm; }
+  body { background: #fff; padding: 0; }
+  .back,
+  .layout > .card:first-child,
+  .preview-toolbar,
+  .notice,
+  .privacy,
+  .sheet-wrap > .preview-helper,
+  .actions,
+  .sheet-actions { display: none !important; }
+  .panel { box-shadow: none; border: none; padding: 0; }
+  .layout { grid-template-columns: 1fr; }
+  .sheet-wrap { border: none; background: #fff; padding: 0; overflow: visible; }
+  .sheet { gap: 0 !important; }
+  .label-card { border-radius: 0; border: 1px solid #ccc; margin: 0; }
+}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="../index.html">← Volver al catálogo</a>
+    <section class="panel">
+      <div class="hero">
+        <h1>Generador de etiquetas</h1>
+        <p>Etiqueta libretas, material, expedientes, carpetas, cajones, cajas y otros materiales.</p>
+      </div>
+
+      <div class="layout">
+        <div class="card">
+          <h2>Datos de la etiqueta</h2>
+          <div class="form-grid">
+            <div>
+              <label for="tipo">Tipo de etiqueta</label>
+              <select id="tipo">
+                <option>Libretas</option>
+                <option>Material escolar</option>
+                <option>Expedientes</option>
+                <option>Carpetas</option>
+                <option>Cajones</option>
+                <option>Cajas</option>
+                <option>Otros materiales</option>
+              </select>
+            </div>
+            <div class="two-col">
+              <div>
+                <label for="nombre">Nombre</label>
+                <input id="nombre" type="text" placeholder="Nombre principal">
+              </div>
+              <div>
+                <label for="grupo">Grupo</label>
+                <input id="grupo" type="text" placeholder="Ej. 2° B">
+              </div>
+            </div>
+            <div class="two-col">
+              <div>
+                <label for="materia">Materia</label>
+                <input id="materia" type="text" placeholder="Materia o área">
+              </div>
+              <div>
+                <label for="escuela">Escuela</label>
+                <input id="escuela" type="text" placeholder="Nombre de la escuela">
+              </div>
+            </div>
+            <div>
+              <label for="extra">Texto adicional</label>
+              <textarea id="extra" placeholder="Observaciones, contenido, clave, etc."></textarea>
+            </div>
+            <div class="switch">
+              <input id="usarQr" type="checkbox">
+              <label for="usarQr" style="margin:0; font-weight:700;">Incluir código QR</label>
+            </div>
+            <div id="qrSection" style="display:none;">
+              <label for="qrTexto">Texto para el QR</label>
+              <input id="qrTexto" type="text" placeholder="Puede ser un enlace, texto o clave">
+            </div>
+            <div class="two-col">
+              <div>
+                <label for="tamano">Tamaño de etiqueta</label>
+                <select id="tamano">
+                  <option value="small">Pequeña</option>
+                  <option value="medium" selected>Mediana</option>
+                  <option value="large">Grande</option>
+                  <option value="custom">Personalizada</option>
+                </select>
+              </div>
+              <div>
+                <label for="cantidad">Cantidad</label>
+                <input id="cantidad" type="number" min="1" max="200" value="12">
+              </div>
+            </div>
+            <div class="two-col" id="customSizeWrap" style="display:none;">
+              <div>
+                <label for="customWidth">Ancho (mm)</label>
+                <input id="customWidth" type="number" min="30" max="200" value="105">
+              </div>
+              <div>
+                <label for="customHeight">Alto (mm)</label>
+                <input id="customHeight" type="number" min="20" max="200" value="52">
+              </div>
+            </div>
+            <div class="three-col">
+              <div>
+                <label for="fontSize">Tamaño de letra</label>
+                <input id="fontSize" type="range" min="10" max="28" value="16">
+              </div>
+              <div>
+                <label for="alineacion">Alineación</label>
+                <select id="alineacion">
+                  <option value="left">Izquierda</option>
+                  <option value="center" selected>Centro</option>
+                  <option value="right">Derecha</option>
+                </select>
+              </div>
+              <div>
+                <label for="guardar">Preferencias</label>
+                <div class="switch" style="margin:0;">
+                  <input id="guardar" type="checkbox">
+                  <label for="guardar" style="margin:0; font-weight:700;">Recordar ajustes</label>
+                </div>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="primary" type="button" id="btnGenerar">Generar etiquetas</button>
+              <button class="secondary" type="button" id="btnDescargar">Descargar PDF</button>
+              <button class="secondary" type="button" id="btnImprimir">Imprimir</button>
+              <button class="danger" type="button" id="btnBorrar">Borrar datos guardados</button>
+            </div>
+            <div id="mensaje" class="notice">Completa los datos para generar la hoja de etiquetas.</div>
+          </div>
+        </div>
+
+        <div class="preview-shell">
+          <div class="preview-toolbar">
+            <div>
+              <strong>Vista previa</strong>
+              <div class="meta">Se genera localmente en tu navegador.</div>
+            </div>
+            <div class="meta" id="resumen">0 etiquetas</div>
+          </div>
+          <div class="sheet-wrap">
+            <div class="preview-helper sheet-actions">
+              <span>Formato listo para Carta y A4.</span>
+              <span>La hoja final repetirá la etiqueta la cantidad indicada.</span>
+            </div>
+            <div id="sheet" class="sheet" data-layout="medium"></div>
+          </div>
+          <div id="hiddenQr"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script>
+    const state = {
+      tipo: 'Libretas',
+      nombre: '',
+      grupo: '',
+      materia: '',
+      escuela: '',
+      extra: '',
+      usarQr: false,
+      qrTexto: '',
+      tamano: 'medium',
+      cantidad: 12,
+      customWidth: 105,
+      customHeight: 52,
+      fontSize: 16,
+      alineacion: 'center',
+      guardar: false
+    };
+
+    const ids = [
+      'tipo', 'nombre', 'grupo', 'materia', 'escuela', 'extra',
+      'usarQr', 'qrTexto', 'tamano', 'cantidad', 'customWidth',
+      'customHeight', 'fontSize', 'alineacion', 'guardar'
+    ];
+
+    const elements = Object.fromEntries(ids.map((id) => [id, document.getElementById(id)]));
+    const sheet = document.getElementById('sheet');
+    const resumen = document.getElementById('resumen');
+    const mensaje = document.getElementById('mensaje');
+    const hiddenQr = document.getElementById('hiddenQr');
+    const qrSection = document.getElementById('qrSection');
+    const customSizeWrap = document.getElementById('customSizeWrap');
+
+    function loadPreferences() {
+      const saved = localStorage.getItem('etiquetas-settings');
+      if (!saved) return;
+      try {
+        const data = JSON.parse(saved);
+        ids.forEach((id) => {
+          if (data[id] === undefined) return;
+          if (elements[id].type === 'checkbox') {
+            elements[id].checked = Boolean(data[id]);
+          } else {
+            elements[id].value = data[id];
+          }
+        });
+      } catch (error) {
+        console.warn('No se pudieron cargar preferencias.');
+      }
+    }
+
+    function savePreferences() {
+      if (!elements.guardar.checked) return;
+      const data = {};
+      ids.forEach((id) => {
+        data[id] = elements[id].type === 'checkbox' ? elements[id].checked : elements[id].value;
+      });
+      localStorage.setItem('etiquetas-settings', JSON.stringify(data));
+    }
+
+    function clearPreferences() {
+      if (!confirm('¿Borrar preferencias guardadas?')) return;
+      localStorage.removeItem('etiquetas-settings');
+      mensaje.className = 'success';
+      mensaje.textContent = 'Preferencias borradas.';
+    }
+
+    function syncStateFromForm() {
+      state.tipo = elements.tipo.value;
+      state.nombre = elements.nombre.value.trim();
+      state.grupo = elements.grupo.value.trim();
+      state.materia = elements.materia.value.trim();
+      state.escuela = elements.escuela.value.trim();
+      state.extra = elements.extra.value.trim();
+      state.usarQr = elements.usarQr.checked;
+      state.qrTexto = elements.qrTexto.value.trim();
+      state.tamano = elements.tamano.value;
+      state.cantidad = Math.max(1, Math.min(200, parseInt(elements.cantidad.value, 10) || 1));
+      state.customWidth = Math.max(30, Math.min(200, parseFloat(elements.customWidth.value) || 105));
+      state.customHeight = Math.max(20, Math.min(200, parseFloat(elements.customHeight.value) || 52));
+      state.fontSize = parseInt(elements.fontSize.value, 10) || 16;
+      state.alineacion = elements.alineacion.value;
+      state.guardar = elements.guardar.checked;
+    }
+
+    function validate() {
+      if (!state.nombre && !state.extra && !state.escuela) {
+        return 'Agrega al menos un nombre, texto adicional o escuela.';
+      }
+      if (state.usarQr && !state.qrTexto) {
+        return 'Activa el QR solo si vas a escribir el texto o enlace del código.';
+      }
+      return '';
+    }
+
+    function buildLabel() {
+      const parts = [];
+      if (state.tipo) parts.push(`<div class="label-meta">${escapeHtml(state.tipo)}</div>`);
+      if (state.nombre) parts.push(`<div class="label-title">${escapeHtml(state.nombre)}</div>`);
+      if (state.grupo || state.materia) {
+        const line = [state.grupo && `Grupo: ${state.grupo}`, state.materia && `Materia: ${state.materia}`].filter(Boolean).join(' · ');
+        parts.push(`<div class="label-sub">${escapeHtml(line)}</div>`);
+      }
+      if (state.escuela) parts.push(`<div class="label-meta">${escapeHtml(state.escuela)}</div>`);
+      if (state.extra) parts.push(`<div class="label-sub">${escapeHtml(state.extra)}</div>`);
+      return parts.join('');
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    function generateQrDataUrl(text) {
+      return new Promise((resolve) => {
+        hiddenQr.innerHTML = '';
+        if (!text) {
+          resolve('');
+          return;
+        }
+        new QRCode(hiddenQr, {
+          text,
+          width: 240,
+          height: 240,
+          colorDark: '#000000',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.H
+        });
+        setTimeout(() => {
+          const canvas = hiddenQr.querySelector('canvas');
+          const image = hiddenQr.querySelector('img');
+          if (canvas) {
+            resolve(canvas.toDataURL('image/png'));
+          } else if (image) {
+            resolve(image.src);
+          } else {
+            resolve('');
+          }
+        }, 140);
+      });
+    }
+
+    async function render() {
+      syncStateFromForm();
+      const error = validate();
+      if (error) {
+        mensaje.className = 'error';
+        mensaje.textContent = error;
+        sheet.innerHTML = '';
+        resumen.textContent = '0 etiquetas';
+        return;
+      }
+
+      mensaje.className = 'success';
+      mensaje.textContent = 'Vista previa generada correctamente.';
+      sheet.dataset.layout = state.tamano;
+      sheet.style.setProperty('--custom-width', `${state.customWidth}mm`);
+      sheet.style.setProperty('--custom-height', `${state.customHeight}mm`);
+      sheet.style.fontSize = `${state.fontSize}px`;
+      sheet.style.textAlign = state.alineacion;
+
+      const qrUrl = state.usarQr ? await generateQrDataUrl(state.qrTexto) : '';
+      const cards = [];
+      const qrHtml = qrUrl ? `<div class="label-qr"><img src="${qrUrl}" alt="Código QR"></div>` : '';
+      const alignmentClass = `align-${state.alineacion}`;
+      const content = buildLabel();
+
+      for (let i = 0; i < state.cantidad; i++) {
+        cards.push(`
+          <article class="label-card ${alignmentClass}">
+            <div class="label-main">${content}</div>
+            ${qrHtml}
+          </article>
+        `);
+      }
+
+      sheet.innerHTML = cards.join('');
+      resumen.textContent = `${state.cantidad} etiqueta${state.cantidad === 1 ? '' : 's'}`;
+      savePreferences();
+    }
+
+    function downloadPdf() {
+      window.print();
+    }
+
+    function printSheet() {
+      window.print();
+    }
+
+    function bindEvents() {
+      const rerenderIds = ['tipo', 'nombre', 'grupo', 'materia', 'escuela', 'extra', 'usarQr', 'qrTexto', 'tamano', 'cantidad', 'customWidth', 'customHeight', 'fontSize', 'alineacion'];
+      rerenderIds.forEach((id) => {
+        const el = elements[id];
+        const eventName = el.type === 'checkbox' || el.tagName === 'SELECT' ? 'change' : 'input';
+        el.addEventListener(eventName, () => {
+          qrSection.style.display = elements.usarQr.checked ? 'block' : 'none';
+          customSizeWrap.style.display = elements.tamano.value === 'custom' ? 'grid' : 'none';
+          render();
+        });
+      });
+
+      elements.btnGenerar.addEventListener('click', render);
+      elements.btnDescargar.addEventListener('click', downloadPdf);
+      elements.btnImprimir.addEventListener('click', printSheet);
+      elements.btnBorrar.addEventListener('click', clearPreferences);
+    }
+
+    function hydrateInitialUi() {
+      qrSection.style.display = elements.usarQr.checked ? 'block' : 'none';
+      customSizeWrap.style.display = elements.tamano.value === 'custom' ? 'grid' : 'none';
+    }
+
+    loadPreferences();
+    hydrateInitialUi();
+    bindEvents();
+    render();
+  </script>
+</body>
+</html>

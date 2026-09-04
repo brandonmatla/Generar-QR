@@ -281,10 +281,7 @@ body {
 				<p>Listado de herramientas del proyecto.</p>
 			</div>
 
-			<div class="search-row">
-				<label for="search">Buscador</label>
-				<input id="search" type="search" placeholder="Buscar herramientas">
-			</div>
+			
 		</header>
 
 		<main class="panel">
@@ -367,18 +364,23 @@ body {
 						<p class="tool-description">Crea enlaces directos con mensaje para abrir WhatsApp.</p>
 					</div>
 				</article>
+				<article class="tool" data-search="etiquetas libretas material expedientes carpetas cajones cajas" role="link" tabindex="0" data-href="etiquetas/index.html" aria-label="Abrir generador de etiquetas">
+					<span class="tag">Nuevo</span>
+					<div>
+						<h3>Generador de etiquetas</h3>
+						<p class="tool-description">Crea etiquetas listas para imprimir y descargar en PDF.</p>
+					</div>
+				</article>
 			</div>
 
-			<div class="empty" id="emptyState">No hay resultados para esa busqueda.</div>
+			<div class="empty" id="emptyState" style="display: none;">No hay resultados para esa busqueda.</div>
 			<p class="footer-note">Si quieres, despues puedo agregar mas herramientas a este listado con el mismo estilo.</p>
 		</main>
 	</div>
 
 	<script>
-		const search = document.getElementById('search');
 		const toolsList = document.getElementById('toolsList');
 		const count = document.getElementById('count');
-		const emptyState = document.getElementById('emptyState');
 		const tools = Array.from(toolsList.querySelectorAll('.tool'));
 
 		function openTool(tool) {
@@ -386,21 +388,6 @@ body {
 			if (href) {
 				window.location.href = href;
 			}
-		}
-
-		function updateList(query) {
-			const value = query.trim().toLowerCase();
-			let visible = 0;
-
-			tools.forEach((tool) => {
-				const text = (tool.dataset.search || '') + ' ' + tool.textContent;
-				const isMatch = text.toLowerCase().includes(value);
-				tool.style.display = isMatch ? 'grid' : 'none';
-				if (isMatch) visible += 1;
-			});
-
-			count.textContent = visible === 1 ? '1 herramienta' : `${visible} herramientas`;
-			emptyState.style.display = visible ? 'none' : 'block';
 		}
 
 		tools.forEach((tool) => {
@@ -413,8 +400,7 @@ body {
 			});
 		});
 
-		search.addEventListener('input', (event) => updateList(event.target.value));
-		updateList('');
+		count.textContent = `${tools.length} herramientas`;
 	</script>
 </body>
 </html>
