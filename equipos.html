@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Generador de equipos</title>
+<title>Generador de equipos aleatorios para clases | Generar-QR</title>
+<meta name="description" content="Reparte nombres de forma aleatoria y equilibrada en equipos para clases y actividades.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://brandonmatla.github.io/Generar-QR/equipos.html">
 <style>
 :root {
   --bg: #f8f9fa;
@@ -97,6 +100,11 @@ button {
   margin-top: 10px;
 }
 
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 3px solid rgba(66, 133, 244, 0.3);
+  outline-offset: 2px;
+}
+
 .teams {
   display: grid;
   gap: 12px;
@@ -111,6 +119,10 @@ button {
 
 .team h3 { margin: 0 0 8px; }
 .team ul { margin: 0; padding-left: 18px; }
+
+.help-content { margin-top: 24px; color: var(--muted); line-height: 1.6; }
+.help-content h2 { margin: 24px 0 8px; color: var(--text); font-size: 1.2rem; }
+.help-content h3 { margin: 16px 0 6px; color: var(--text); font-size: 1rem; }
 
 .note { margin-top: 12px; color: var(--muted); font-size: 0.92rem; }
 
@@ -145,16 +157,27 @@ Ana
 Luis</textarea>
 
           <label for="cantidad" style="margin-top:12px;">Número de equipos</label>
-          <input id="cantidad" type="number" min="1" value="3">
+          <input id="cantidad" type="number" min="1" max="30" value="3">
 
           <button type="button" onclick="revolverEquipos()">🔀 Revolver equipos</button>
-          <div class="note">El reparto es aleatorio y reparte nombres lo más parejo posible.</div>
+          <div class="note">El reparto es aleatorio y reparte nombres lo más parejo posible. Puedes crear hasta 30 equipos.</div>
         </div>
 
         <div class="card">
-          <div class="teams" id="resultado"></div>
+          <div class="teams" id="resultado" aria-live="polite"></div>
         </div>
       </div>
+      <section class="help-content">
+        <h2>Cómo se forman los equipos</h2>
+        <p>Escribe un nombre por línea o sepáralos con comas, indica la cantidad de equipos y pulsa “Revolver equipos”. La lista se mezcla antes de repartirla de manera circular para que los equipos queden lo más equilibrados posible.</p>
+        <h2>Ejemplo práctico</h2>
+        <p>Con 10 alumnos y 3 equipos, dos equipos recibirán 3 integrantes y otro recibirá 4. Cuando la cantidad no es divisible entre los equipos, la diferencia máxima será de una persona.</p>
+        <h2>Preguntas frecuentes</h2>
+        <h3>¿El resultado siempre es igual?</h3>
+        <p>No. Cada generación vuelve a mezclar la lista y puede producir una distribución diferente.</p>
+        <h3>¿Se guardan los nombres?</h3>
+        <p>No se envían a un servidor propio. La herramienta los usa en el navegador mientras la página está abierta.</p>
+      </section>
     </section>
   </div>
 
@@ -177,23 +200,39 @@ Luis</textarea>
       const resultado = document.getElementById('resultado');
 
       if (!nombres.length) {
-        resultado.innerHTML = '<div class="team"><h3>Agrega nombres</h3><p>Escribe al menos un nombre para formar equipos.</p></div>';
+        resultado.replaceChildren();
+        const aviso = document.createElement('div');
+        aviso.className = 'team';
+        const titulo = document.createElement('h3');
+        titulo.textContent = 'Agrega nombres';
+        const texto = document.createElement('p');
+        texto.textContent = 'Escribe al menos un nombre para formar equipos.';
+        aviso.append(titulo, texto);
+        resultado.appendChild(aviso);
         return;
       }
 
-      const equipos = Array.from({ length: cantidad }, (_, index) => ({ nombre: `EQUIPO ${index + 1}`, integrantes: [] }));
+      const cantidadLimitada = Math.min(30, cantidad, nombres.length);
+      const equipos = Array.from({ length: cantidadLimitada }, (_, index) => ({ nombre: `EQUIPO ${index + 1}`, integrantes: [] }));
       mezclar(nombres).forEach((nombre, index) => {
-        equipos[index % cantidad].integrantes.push(nombre);
+        equipos[index % cantidadLimitada].integrantes.push(nombre);
       });
 
-      resultado.innerHTML = equipos.map((equipo) => `
-        <div class="team">
-          <h3>${equipo.nombre}</h3>
-          <ul>
-            ${equipo.integrantes.map((integrante) => `<li>${integrante}</li>`).join('')}
-          </ul>
-        </div>
-      `).join('');
+      resultado.replaceChildren();
+      equipos.forEach((equipo) => {
+        const equipoEl = document.createElement('div');
+        equipoEl.className = 'team';
+        const titulo = document.createElement('h3');
+        titulo.textContent = equipo.nombre;
+        const lista = document.createElement('ul');
+        equipo.integrantes.forEach((integrante) => {
+          const item = document.createElement('li');
+          item.textContent = integrante;
+          lista.appendChild(item);
+        });
+        equipoEl.append(titulo, lista);
+        resultado.appendChild(equipoEl);
+      });
     }
 
     revolverEquipos();

@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Generador de ejercicios matemáticos</title>
+<title>Generador de ejercicios matemáticos imprimibles | Generar-QR</title>
+<meta name="description" content="Genera ejercicios de sumas, restas, multiplicaciones y divisiones exactas con respuestas para practicar.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://brandonmatla.github.io/Generar-QR/matematicas.html">
 <style>
 :root { --bg:#f8f9fa; --panel:#ffffff; --border:#dadce0; --text:#202124; --muted:#5f6368; --blue:#4285f4; }
 * { box-sizing: border-box; }
@@ -28,6 +31,10 @@ button { cursor: pointer; font-weight: 700; margin-top: 10px; }
 .exercise h3, .answer h3 { margin: 0 0 8px; }
 .math-line { font-size: 1.1rem; font-weight: 700; }
 .note { margin-top: 10px; color: var(--muted); font-size: 0.92rem; }
+.help-content { margin-top: 24px; color: var(--muted); line-height: 1.6; }
+.help-content h2 { margin: 24px 0 8px; color: var(--text); font-size: 1.2rem; }
+.help-content h3 { margin: 16px 0 6px; color: var(--text); font-size: 1rem; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid rgba(66, 133, 244, 0.3); outline-offset: 2px; }
 @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
 @media (max-width: 520px) { body { padding: 10px; } .panel { padding: 16px; border-radius: 18px; } input, button, select { font-size: 15px; } }
 @media print { body { background: #fff; padding: 0; } .back, .card:first-child, button { display: none !important; } .panel { box-shadow: none; border: none; padding: 0; } .layout { grid-template-columns: 1fr; } }
@@ -53,7 +60,7 @@ button { cursor: pointer; font-weight: 700; margin-top: 10px; }
             <input id="rango" type="number" min="2" max="999" value="20">
           </div>
           <div>
-            <label for="operacion">Operacion</label>
+            <label for="operacion">Operación</label>
             <select id="operacion">
               <option value="mix">Mezcladas</option>
               <option value="add">Sumas</option>
@@ -63,21 +70,34 @@ button { cursor: pointer; font-weight: 700; margin-top: 10px; }
             </select>
           </div>
           <button class="primary" type="button" onclick="generar()">Generar ejercicios</button>
-          <button class="secondary" type="button" onclick="window.print()">Descargar</button>
+          <button class="secondary" type="button" onclick="window.print()">Imprimir o guardar como PDF</button>
           <div class="note">Se genera una hoja de ejercicios y otra de respuestas.</div>
         </div>
 
         <div class="grid">
           <div class="exercise">
             <h3>Ejercicios</h3>
-            <div id="ejercicios"></div>
+            <div id="ejercicios" aria-live="polite"></div>
           </div>
           <div class="answer">
             <h3>Respuestas</h3>
-            <div id="respuestas"></div>
+            <div id="respuestas" aria-live="polite"></div>
           </div>
         </div>
       </div>
+      <section class="help-content">
+        <h2>Operaciones disponibles</h2>
+        <p>Puedes generar sumas, restas, multiplicaciones, divisiones exactas o una mezcla de todas. El rango indica los valores utilizados para crear los ejercicios; no representa necesariamente el resultado máximo.</p>
+        <h2>Ejemplo práctico</h2>
+        <p>Para una práctica breve, elige 10 ejercicios y un rango de 20. En las divisiones exactas, el dividendo se crea para que la respuesta sea un número entero.</p>
+        <h2>Resultados y límites</h2>
+        <p>Las restas se generan sin resultados negativos y las divisiones no dejan residuo. Se pueden crear hasta 50 ejercicios y utilizar un rango de hasta 999.</p>
+        <h2>Preguntas frecuentes</h2>
+        <h3>¿Puedo imprimir las respuestas por separado?</h3>
+        <p>La vista de respuestas aparece debajo de los ejercicios y el diálogo de impresión permite guardar el resultado como PDF desde el navegador.</p>
+        <h3>¿Se guarda la práctica?</h3>
+        <p>No. Los ejercicios se generan localmente y desaparecen al cerrar o recargar la página.</p>
+      </section>
     </section>
   </div>
 
@@ -114,8 +134,8 @@ button { cursor: pointer; font-weight: 700; margin-top: 10px; }
     }
 
     function generar() {
-      const cantidad = Math.max(1, parseInt(document.getElementById('cantidad').value, 10) || 1);
-      const rango = Math.max(2, parseInt(document.getElementById('rango').value, 10) || 20);
+      const cantidad = Math.min(50, Math.max(1, parseInt(document.getElementById('cantidad').value, 10) || 1));
+      const rango = Math.min(999, Math.max(2, parseInt(document.getElementById('rango').value, 10) || 20));
       const operacion = document.getElementById('operacion').value;
       const ejercicios = [];
 
@@ -123,13 +143,21 @@ button { cursor: pointer; font-weight: 700; margin-top: 10px; }
         ejercicios.push(crearOperacion(operacion, rango));
       }
 
-      document.getElementById('ejercicios').innerHTML = ejercicios.map((item, index) => `
-        <div class="math-line">${index + 1}. ${item.text}</div>
-      `).join('');
+      const ejerciciosEl = document.getElementById('ejercicios');
+      const respuestasEl = document.getElementById('respuestas');
+      ejerciciosEl.replaceChildren();
+      respuestasEl.replaceChildren();
+      ejercicios.forEach((item, index) => {
+        const ejercicio = document.createElement('div');
+        ejercicio.className = 'math-line';
+        ejercicio.textContent = `${index + 1}. ${item.text}`;
+        ejerciciosEl.appendChild(ejercicio);
 
-      document.getElementById('respuestas').innerHTML = ejercicios.map((item, index) => `
-        <div class="math-line">${index + 1}. ${item.answer}</div>
-      `).join('');
+        const respuesta = document.createElement('div');
+        respuesta.className = 'math-line';
+        respuesta.textContent = `${index + 1}. ${item.answer}`;
+        respuestasEl.appendChild(respuesta);
+      });
     }
 
     generar();

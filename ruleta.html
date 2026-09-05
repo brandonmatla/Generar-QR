@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ruleta de nombres</title>
+<title>Ruleta de nombres aleatoria para clases | Generar-QR</title>
+<meta name="description" content="Elige un nombre al azar con una ruleta visual para clases, actividades y sorteos sencillos.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://brandonmatla.github.io/Generar-QR/ruleta.html">
 <style>
 :root {
   --bg: #f8f9fa;
@@ -188,6 +191,11 @@ canvas {
   font-size: 0.92rem;
 }
 
+.help-content { margin-top: 24px; color: var(--muted); line-height: 1.6; }
+.help-content h2 { margin: 24px 0 8px; color: var(--text); font-size: 1.2rem; }
+.help-content h3 { margin: 16px 0 6px; color: var(--text); font-size: 1rem; }
+button:focus-visible, a:focus-visible, textarea:focus-visible { outline: 3px solid rgba(66, 133, 244, 0.3); outline-offset: 2px; }
+
 @media (max-width: 820px) {
   .layout { grid-template-columns: 1fr; }
 }
@@ -219,22 +227,33 @@ Carlos
 Ana
 Luis</textarea>
           <button class="primary" type="button" onclick="girar()">🎰 Girar ruleta</button>
-          <p class="hint" style="margin-top:10px;">La ruleta se adapta a cualquier tamaño de pantalla y puedes usar Enter para girarla.</p>
+          <p class="hint" style="margin-top:10px;">La ruleta se adapta a cualquier tamaño de pantalla. También puedes usar Ctrl + Enter o Cmd + Enter.</p>
         </div>
 
         <div class="card wheel-area">
           <div class="wheel-box">
             <div class="pointer" aria-hidden="true"></div>
             <div class="wheel" id="wheelWrap">
-              <canvas id="wheelCanvas"></canvas>
+              <canvas id="wheelCanvas" role="img" aria-label="Ruleta visual de nombres"></canvas>
             </div>
           </div>
           <div class="result">
             Resultado
-            <strong id="winner">Listo para girar</strong>
+            <strong id="winner" aria-live="polite">Listo para girar</strong>
           </div>
         </div>
       </div>
+      <section class="help-content">
+        <h2>Cómo funciona</h2>
+        <p>Escribe un nombre por línea y pulsa “Girar ruleta”. La herramienta elige una posición al azar entre los nombres disponibles y muestra el resultado después de la animación.</p>
+        <h2>Ejemplo práctico</h2>
+        <p>Puedes introducir los nombres de una clase, un orden de participación o varias opciones para realizar un sorteo sencillo. Los nombres largos se acortan visualmente dentro de la ruleta, pero el resultado conserva el texto completo.</p>
+        <h2>Preguntas frecuentes</h2>
+        <h3>¿La elección es realmente aleatoria?</h3>
+        <p>La posición se elige con el generador aleatorio del navegador. La ruleta no conserva turnos anteriores ni elimina automáticamente al ganador.</p>
+        <h3>¿Qué pasa con nombres repetidos?</h3>
+        <p>Cada línea se considera una opción independiente, aunque el texto sea igual.</p>
+      </section>
     </section>
   </div>
 
@@ -251,7 +270,7 @@ Luis</textarea>
     const colors = ['#4285f4', '#ea4335', '#fbbc05', '#34a853', '#8ab4f8', '#f28b82', '#fdd663', '#81c995'];
 
     function getNames() {
-      return textarea.value.split(/\n|,/).map((name) => name.trim()).filter(Boolean);
+      return textarea.value.split(/\n|,/).map((name) => name.trim()).filter(Boolean).slice(0, 100);
     }
 
     function resizeCanvas() {

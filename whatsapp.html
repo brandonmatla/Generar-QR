@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Generador de enlace de WhatsApp</title>
+<title>Generador de enlaces de WhatsApp con mensaje | Generar-QR</title>
+<meta name="description" content="Crea un enlace de WhatsApp con número internacional y mensaje preparado para abrir una conversación.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://brandonmatla.github.io/Generar-QR/whatsapp.html">
 <style>
 :root { --bg:#f8f9fa; --panel:#ffffff; --border:#dadce0; --text:#202124; --muted:#5f6368; --blue:#4285f4; }
 * { box-sizing: border-box; }
@@ -28,6 +31,10 @@ button { cursor: pointer; font-weight: 700; margin-top: 10px; }
 .result { border: 1px solid var(--border); border-radius: 18px; padding: 14px; background: #fafafa; word-break: break-all; }
 .result strong { display: block; margin-top: 4px; color: var(--blue); }
 .note { margin-top: 10px; color: var(--muted); font-size: .92rem; }
+.help-content { margin-top: 24px; color: var(--muted); line-height: 1.6; }
+.help-content h2 { margin: 24px 0 8px; color: var(--text); font-size: 1.2rem; }
+.help-content h3 { margin: 16px 0 6px; color: var(--text); font-size: 1rem; }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid rgba(66, 133, 244, 0.3); outline-offset: 2px; }
 @media (max-width: 820px) { .layout { grid-template-columns: 1fr; } }
 @media (max-width: 520px) { body { padding: 10px; } .panel { padding: 16px; border-radius: 18px; } input, textarea, button { font-size: 15px; } }
 </style>
@@ -55,7 +62,7 @@ button { cursor: pointer; font-weight: 700; margin-top: 10px; }
         <div class="output">
           <div class="card">
             <h2 style="margin:0 0 10px; font-size:1.1rem;">Enlace</h2>
-            <div class="result"><span id="urlTexto">Listo para generar</span><strong id="urlFinal"></strong></div>
+            <div class="result" aria-live="polite"><span id="urlTexto">Listo para generar</span><strong id="urlFinal"></strong></div>
           </div>
           <div class="card">
             <h2 style="margin:0 0 10px; font-size:1.1rem;">Abrir</h2>
@@ -63,6 +70,19 @@ button { cursor: pointer; font-weight: 700; margin-top: 10px; }
           </div>
         </div>
       </div>
+      <section class="help-content">
+        <h2>Formato internacional</h2>
+        <p>Escribe el prefijo del país seguido del número, sin signos, espacios ni guiones. Por ejemplo, un número de México puede comenzar por 52 y uno de España por 34.</p>
+        <h2>Ejemplo y limitaciones</h2>
+        <p>El número de ejemplo y el mensaje inicial sirven para probar la herramienta. La página construye el enlace, pero no verifica que el número exista, que tenga WhatsApp o que pueda recibir mensajes.</p>
+        <h2>Privacidad</h2>
+        <p>El número y el mensaje se usan en el navegador para crear la URL. Al pulsar “Abrir WhatsApp”, el enlace pasa a un servicio externo sujeto a sus propias condiciones.</p>
+        <h2>Preguntas frecuentes</h2>
+        <h3>¿Por qué se eliminan los espacios del teléfono?</h3>
+        <p>WhatsApp espera el número en formato internacional continuo. La herramienta elimina separadores comunes, pero debes revisar el resultado antes de compartirlo.</p>
+        <h3>¿El mensaje se envía automáticamente?</h3>
+        <p>No. Se prepara el texto en el enlace y la conversación se abre en WhatsApp; el envío depende de la acción del usuario.</p>
+      </section>
     </section>
   </div>
 
@@ -75,8 +95,13 @@ button { cursor: pointer; font-weight: 700; margin-top: 10px; }
       const urlTexto = document.getElementById('urlTexto');
       const urlFinal = document.getElementById('urlFinal');
 
-      if (!telefono) {
-        alert('Ingresa un número de teléfono.');
+      if (!telefono || telefono.length < 7 || telefono.length > 15) {
+        alert('Ingresa un número internacional válido de 7 a 15 dígitos.');
+        return;
+      }
+
+      if (mensaje.length > 2000) {
+        alert('El mensaje no puede superar los 2000 caracteres.');
         return;
       }
 

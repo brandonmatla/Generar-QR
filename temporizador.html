@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Temporizador para clases</title>
+<title>Temporizador para clases con cuenta regresiva | Generar-QR</title>
+<meta name="description" content="Usa un temporizador para clases con tiempos rápidos, duración personalizada, pausa y pantalla completa.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://brandonmatla.github.io/Generar-QR/temporizador.html">
 <style>
 :root {
   --bg: #f8f9fa;
@@ -83,6 +86,10 @@ button:hover { filter: brightness(0.98); }
 input:focus { outline: none; border-color: rgba(66, 133, 244, 0.55); box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.12); }
 
 .note { font-size: 0.92rem; color: var(--muted); }
+.help-content { margin-top: 24px; color: var(--muted); line-height: 1.6; }
+.help-content h2 { margin: 24px 0 8px; color: var(--text); font-size: 1.2rem; }
+.help-content h3 { margin: 16px 0 6px; color: var(--text); font-size: 1rem; }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid rgba(66, 133, 244, 0.3); outline-offset: 2px; }
 
 @media (max-width: 820px) { .layout, .pair, .preset-row { grid-template-columns: 1fr 1fr; } .layout { grid-template-columns: 1fr; } }
 @media (max-width: 520px) {
@@ -106,8 +113,8 @@ input:focus { outline: none; border-color: rgba(66, 133, 244, 0.55); box-shadow:
       <div class="layout">
         <div class="card display">
           <div>
-            <p class="time" id="time">15:00</p>
-            <p class="status" id="status">Listo para iniciar</p>
+            <p class="time" id="time" aria-live="polite">15:00</p>
+            <p class="status" id="status" aria-live="polite">Listo para iniciar</p>
           </div>
         </div>
 
@@ -124,7 +131,7 @@ input:focus { outline: none; border-color: rgba(66, 133, 244, 0.55); box-shadow:
           <div class="pair">
             <div>
               <label for="custom">Personalizado (minutos)</label>
-              <input id="custom" type="number" min="1" placeholder="Ej. 12">
+              <input id="custom" type="number" min="1" max="240" placeholder="Ej. 12">
             </div>
             <div style="display:grid; align-items:end;">
               <button type="button" class="secondary" onclick="applyCustom()">Usar personalizado</button>
@@ -141,9 +148,20 @@ input:focus { outline: none; border-color: rgba(66, 133, 244, 0.55); box-shadow:
             <button type="button" class="secondary" onclick="resumeTimer()">Continuar</button>
           </div>
 
-          <div class="note">Cuando termine verás un aviso y el temporizador se detendrá automáticamente.</div>
+          <div class="note">Cuando termine verás un aviso y el temporizador se detendrá automáticamente. La duración personalizada admite hasta 240 minutos.</div>
         </div>
       </div>
+      <section class="help-content">
+        <h2>Cómo utilizar el temporizador</h2>
+        <p>Elige uno de los tiempos rápidos o escribe una duración personalizada. Pulsa “Iniciar” para comenzar, “Pausar” para detener temporalmente la cuenta y “Continuar” para retomarla.</p>
+        <h2>Pantalla completa y sonido</h2>
+        <p>El botón de pantalla completa ayuda a mostrar el tiempo desde lejos en una clase. Al llegar a cero se reproduce un aviso sonoro; algunos navegadores pueden bloquear el audio hasta que exista una interacción con la página.</p>
+        <h2>Preguntas frecuentes</h2>
+        <h3>¿Qué hace “Reiniciar”?</h3>
+        <p>Devuelve el contador al último tiempo seleccionado, sin borrar la duración personalizada.</p>
+        <h3>¿Cuál es el límite?</h3>
+        <p>La duración personalizada está limitada a 240 minutos para mantener una entrada razonable y evitar valores accidentales.</p>
+      </section>
     </section>
   </div>
 
@@ -241,8 +259,8 @@ input:focus { outline: none; border-color: rgba(66, 133, 244, 0.55); box-shadow:
 
     function applyCustom() {
       const minutes = parseInt(document.getElementById('custom').value, 10);
-      if (!minutes || minutes < 1) {
-        alert('Ingresa un valor valido en minutos.');
+      if (!minutes || minutes < 1 || minutes > 240) {
+        alert('Ingresa un valor válido entre 1 y 240 minutos.');
         return;
       }
       setMinutes(minutes);

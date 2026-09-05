@@ -2,8 +2,11 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Generador de Código QR</title>
+<title>Generador de códigos QR estáticos | Generar-QR</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Genera códigos QR estáticos para textos y enlaces, y descarga la imagen directamente desde tu navegador.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://brandonmatla.github.io/Generar-QR/QR.html">
 
 <style>
 :root {
@@ -78,6 +81,11 @@ h2 {
   font-size: clamp(1.5rem, 4vw, 2rem);
 }
 
+h1 {
+  margin: 28px 0 0;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+}
+
 p {
   color: var(--muted);
 }
@@ -114,6 +122,27 @@ input {
 input:focus {
   border-color: #a8c7fa;
   box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.12);
+}
+
+button:focus-visible, a:focus-visible, input:focus-visible {
+  outline: 3px solid rgba(26, 115, 232, 0.3);
+  outline-offset: 2px;
+}
+
+.help-content {
+  margin-top: 24px;
+  text-align: left;
+  line-height: 1.6;
+}
+
+.help-content h2 {
+  margin-top: 24px;
+  font-size: 1.2rem;
+}
+
+.help-content h3 {
+  margin-bottom: 6px;
+  font-size: 1rem;
 }
 
 canvas, img {
@@ -155,16 +184,31 @@ canvas, img {
 <body>
 <div class="container">
   <a class="back-link" href="index.html" aria-label="Volver al inicio">←</a>
-  <h2>📱 Generador de QR</h2>
-  <p>Genera y descarga tu codigo QR.</p>
+  <h1>Generador de códigos QR</h1>
+  <p>Genera y descarga un código QR estático para un texto o enlace.</p>
 
-  <input id="texto" type="text" placeholder="Pega el link aquí">
+  <label for="texto">Texto o enlace</label>
+  <input id="texto" type="text" placeholder="Pega el enlace o escribe un texto aquí" maxlength="2000">
 
-  <button onclick="generarQR()">Generar QR</button>
+  <button type="button" onclick="generarQR()">Generar QR</button>
 
-  <div id="qrcode"></div>
+  <div id="qrcode" aria-live="polite" aria-label="Vista previa del código QR"></div>
 
-  <button id="descargar" onclick="descargarQR()">⬇️ Descargar QR (HQ)</button>
+  <button id="descargar" type="button" onclick="descargarQR()">⬇️ Descargar código QR</button>
+
+  <section class="help-content">
+    <h2>Cómo utilizar esta herramienta</h2>
+    <p>Escribe una URL, una frase o cualquier texto que quieras compartir. Después selecciona “Generar QR” y usa el botón de descarga para guardar la imagen PNG.</p>
+    <h2>Qué significa que sea estático</h2>
+    <p>El código contiene directamente el texto indicado y no depende de una cuenta de Generar-QR. Si codificas una URL, el código no caduca, pero la página de destino puede cambiar o dejar de existir.</p>
+    <h2>Ejemplos y privacidad</h2>
+    <p>Puedes codificar <strong>https://ejemplo.com</strong>, una dirección de contacto o instrucciones breves. Evita incluir contraseñas, documentos personales o información que no quieras compartir: cualquiera que escanee el código podrá leer su contenido.</p>
+    <h2>Preguntas frecuentes</h2>
+    <h3>¿El texto se envía a un servidor?</h3>
+    <p>La generación se realiza en el navegador. La biblioteca QR se carga desde un CDN externo, pero el proyecto no tiene un backend propio para guardar el texto.</p>
+    <h3>¿Puedo usar el QR después?</h3>
+    <p>Sí. La imagen puede imprimirse o compartirse, siempre que el contenido codificado siga siendo válido.</p>
+  </section>
 </div>
 
 <!-- LIBRERÍA REAL -->
@@ -183,7 +227,12 @@ function generarQR() {
     return;
   }
 
-  contenedor.innerHTML = "";
+  if (texto.length > 2000) {
+    alert("El texto no puede superar los 2000 caracteres.");
+    return;
+  }
+
+  contenedor.replaceChildren();
   btnDescargar.style.display = "none";
 
   // Generamos QR en ALTA RESOLUCIÓN
