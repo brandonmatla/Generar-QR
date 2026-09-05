@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://brandonmatla.github.io/Generar-QR/sitemap.xml
