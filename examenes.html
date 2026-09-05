@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Generador de exámenes</title>
+<title>Generador de exámenes imprimibles | Generar-QR</title>
+<meta name="description" content="Crea exámenes con preguntas de opción múltiple y una hoja de respuestas lista para imprimir.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://brandonmatla.github.io/Generar-QR/examenes.html">
 <style>
 :root { --bg:#f8f9fa; --panel:#fff; --border:#dadce0; --text:#202124; --muted:#5f6368; --blue:#4285f4; }
 * { box-sizing: border-box; }
@@ -21,6 +24,7 @@ textarea, button { width:100%; border-radius:14px; border:1px solid var(--border
 textarea { min-height: 420px; resize:vertical; outline:none; }
 textarea:focus { border-color:rgba(66,133,244,.55); box-shadow:0 0 0 3px rgba(66,133,244,.12); }
 button { cursor:pointer; font-weight:700; margin-top:10px; }
+button:focus-visible, a:focus-visible, textarea:focus-visible { outline:3px solid rgba(66,133,244,.3); outline-offset:2px; }
 .primary { background:var(--blue); color:white; border:none; }
 .secondary { background:#f8f9fa; color:var(--text); }
 .output { display:grid; gap:16px; }
@@ -33,6 +37,9 @@ button { cursor:pointer; font-weight:700; margin-top:10px; }
 .option span { display:inline-flex; min-width:22px; }
 .answer-line { font-weight:700; }
 .note { margin-top:10px; color:var(--muted); font-size:.92rem; }
+.help-content { margin-top: 24px; color: var(--muted); line-height: 1.6; }
+.help-content h2 { margin: 24px 0 8px; color: var(--text); font-size: 1.2rem; }
+.help-content h3 { margin: 16px 0 6px; color: var(--text); font-size: 1rem; }
 @media (max-width: 940px) { .layout { grid-template-columns:1fr; } textarea { min-height:260px; } }
 @media (max-width: 520px) { body { padding:10px; } .panel { padding:16px; border-radius:18px; } textarea, button { font-size:15px; } }
 @media print { body { background:#fff; padding:0; } .back, .card:first-child, button { display:none !important; } .panel { box-shadow:none; border:none; padding:0; } .layout { grid-template-columns:1fr; } .sheet { break-inside:avoid; background:#fff; } }
@@ -61,21 +68,34 @@ D) Puebla
 Respuesta correcta:
 B</textarea>
           <button class="primary" type="button" onclick="generar()">Generar examen</button>
-          <button class="secondary" type="button" onclick="window.print()">Descargar</button>
+          <button class="secondary" type="button" onclick="window.print()">Imprimir o guardar como PDF</button>
           <div class="note">Usa bloques separados por una línea en blanco. Cada bloque debe incluir pregunta, opciones y respuesta correcta.</div>
         </div>
 
         <div class="output">
           <div class="sheet">
             <h2>EXAMEN</h2>
-            <div id="examen"></div>
+            <div id="examen" aria-live="polite"></div>
           </div>
           <div class="sheet">
             <h2>RESPUESTAS</h2>
-            <div id="respuestas"></div>
+            <div id="respuestas" aria-live="polite"></div>
           </div>
         </div>
       </div>
+      <section class="help-content">
+        <h2>Formato de entrada</h2>
+        <p>Cada bloque debe comenzar con “Pregunta 1:”, incluir el texto de la pregunta, opciones con las letras A) a D) y una línea “Respuesta correcta:” seguida de la letra válida. Separa los bloques con una línea en blanco.</p>
+        <h2>Ejemplo válido</h2>
+        <p>El ejemplo que aparece en el formulario contiene una pregunta, cuatro opciones y la respuesta B. Puedes sustituir ese contenido siguiendo el mismo orden.</p>
+        <h2>Errores frecuentes</h2>
+        <p>Si falta la etiqueta de la pregunta, la respuesta correcta o las opciones están escritas con otro formato, la herramienta puede mostrar un bloque incompleto. Revisa el texto antes de imprimir.</p>
+        <h2>Preguntas frecuentes</h2>
+        <h3>¿La herramienta crea preguntas automáticamente?</h3>
+        <p>No. Tú escribes las preguntas y la página organiza el examen y la hoja de respuestas.</p>
+        <h3>¿Cómo guardo el examen?</h3>
+        <p>Usa “Imprimir o guardar como PDF” y selecciona la opción de guardar del diálogo de impresión del navegador.</p>
+      </section>
     </section>
   </div>
 
@@ -102,27 +122,48 @@ B</textarea>
       const respuestasEl = document.getElementById('respuestas');
 
       if (!bloques.length) {
-        examenEl.innerHTML = '<p>Agrega al menos una pregunta.</p>';
-        respuestasEl.innerHTML = '<p>Agrega al menos una pregunta.</p>';
+        examenEl.replaceChildren();
+        respuestasEl.replaceChildren();
+        const aviso = document.createElement('p');
+        aviso.textContent = 'Agrega al menos una pregunta.';
+        examenEl.appendChild(aviso);
+        respuestasEl.appendChild(aviso.cloneNode(true));
         return;
       }
 
       const questions = bloques.map(parseQuestion);
 
-      examenEl.innerHTML = questions.map((item, index) => `
-        <div class="question">
-          <div class="answer-line">${index + 1}. ${item.questionText || item.questionLine.replace(/^pregunta\s*\d+\s*:/i, '').trim()}</div>
-          <div class="options">
-            ${item.options.map((option) => `<label class="option"><span>☐</span><span>${option.replace(/^[A-D]\)\s*/i, '')}</span></label>`).join('')}
-          </div>
-        </div>
-      `).join('');
+      examenEl.replaceChildren();
+      respuestasEl.replaceChildren();
+      questions.forEach((item, index) => {
+        const question = document.createElement('div');
+        question.className = 'question';
+        const text = document.createElement('div');
+        text.className = 'answer-line';
+        text.textContent = `${index + 1}. ${item.questionText || item.questionLine.replace(/^pregunta\s*\d+\s*:/i, '').trim()}`;
+        const options = document.createElement('div');
+        options.className = 'options';
+        item.options.forEach((option) => {
+          const label = document.createElement('label');
+          label.className = 'option';
+          const box = document.createElement('span');
+          box.textContent = '☐';
+          const optionText = document.createElement('span');
+          optionText.textContent = option.replace(/^[A-D]\)\s*/i, '');
+          label.append(box, optionText);
+          options.appendChild(label);
+        });
+        question.append(text, options);
+        examenEl.appendChild(question);
 
-      respuestasEl.innerHTML = questions.map((item, index) => `
-        <div class="question">
-          <div class="answer-line">${index + 1}. ${item.answer || 'Sin respuesta'}</div>
-        </div>
-      `).join('');
+        const answer = document.createElement('div');
+        answer.className = 'question';
+        const answerText = document.createElement('div');
+        answerText.className = 'answer-line';
+        answerText.textContent = `${index + 1}. ${item.answer || 'Sin respuesta'}`;
+        answer.appendChild(answerText);
+        respuestasEl.appendChild(answer);
+      });
     }
 
     generar();

@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Generador de etiquetas</title>
+<title>Generador de etiquetas imprimibles con QR | Generar-QR</title>
+<meta name="description" content="Diseña etiquetas para libretas, material y cajas, con tamaños personalizados y códigos QR opcionales.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://brandonmatla.github.io/Generar-QR/etiquetas.html">
 <style>
 :root {
   --bg: #f8f9fa;
@@ -90,6 +93,7 @@ button {
   transition: transform 0.16s ease, background 0.16s ease;
 }
 button:hover { transform: translateY(-1px); }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 3px solid rgba(66, 133, 244, 0.3); outline-offset: 2px; }
 .primary {
   background: var(--blue);
   color: #fff;
@@ -237,6 +241,9 @@ button:hover { transform: translateY(-1px); }
   color: #c5221f;
   border: 1px solid #f5c2bf;
 }
+.help-content { margin-top: 24px; color: var(--muted); line-height: 1.6; }
+.help-content h2 { margin: 24px 0 8px; color: var(--text); font-size: 1.2rem; }
+.help-content h3 { margin: 16px 0 6px; color: var(--text); font-size: 1rem; }
 @media (max-width: 980px) {
   .layout { grid-template-columns: 1fr; }
 }
@@ -371,11 +378,11 @@ button:hover { transform: translateY(-1px); }
             </div>
             <div class="actions">
               <button class="primary" type="button" id="btnGenerar">Generar etiquetas</button>
-              <button class="secondary" type="button" id="btnDescargar">Descargar PDF</button>
+              <button class="secondary" type="button" id="btnDescargar">Imprimir o guardar como PDF</button>
               <button class="secondary" type="button" id="btnImprimir">Imprimir</button>
               <button class="danger" type="button" id="btnBorrar">Borrar datos guardados</button>
             </div>
-            <div id="mensaje" class="notice">Completa los datos para generar la hoja de etiquetas.</div>
+            <div id="mensaje" class="notice" aria-live="polite">Completa los datos para generar la hoja de etiquetas.</div>
           </div>
         </div>
 
@@ -397,6 +404,19 @@ button:hover { transform: translateY(-1px); }
           <div id="hiddenQr"></div>
         </div>
       </div>
+      <section class="help-content">
+        <h2>Cómo crear etiquetas</h2>
+        <p>Completa los campos principales, elige un tamaño y define la cantidad. La vista previa se actualiza con el contenido que aparecerá en cada etiqueta.</p>
+        <h2>Tamaños, impresión y PDF</h2>
+        <p>Pequeña, mediana y grande utilizan medidas preparadas para hojas comunes. También puedes elegir un tamaño personalizado en milímetros. El botón de impresión abre el diálogo del navegador, donde puedes seleccionar una impresora o guardar la hoja como PDF.</p>
+        <h2>Códigos QR y preferencias</h2>
+        <p>El QR es opcional y puede contener un enlace, texto o clave. Si activas “Recordar ajustes”, el navegador guarda localmente los valores de esta herramienta, incluidos nombre, grupo, materia, escuela, texto adicional, configuración visual y texto del QR. El botón “Borrar datos guardados” elimina esas preferencias.</p>
+        <h2>Preguntas frecuentes</h2>
+        <h3>¿Se envían los datos de la etiqueta?</h3>
+        <p>No se envían a un servidor propio. Se procesan en el navegador y solo se guardan localmente cuando activas la opción de recordar ajustes.</p>
+        <h3>¿Cuántas etiquetas puedo crear?</h3>
+        <p>La herramienta permite hasta 200 por generación. Para hojas grandes, una cantidad menor puede ofrecer una vista previa más fluida.</p>
+      </section>
     </section>
   </div>
 
@@ -433,6 +453,10 @@ button:hover { transform: translateY(-1px); }
     const hiddenQr = document.getElementById('hiddenQr');
     const qrSection = document.getElementById('qrSection');
     const customSizeWrap = document.getElementById('customSizeWrap');
+    const btnGenerar = document.getElementById('btnGenerar');
+    const btnDescargar = document.getElementById('btnDescargar');
+    const btnImprimir = document.getElementById('btnImprimir');
+    const btnBorrar = document.getElementById('btnBorrar');
 
     function loadPreferences() {
       const saved = localStorage.getItem('etiquetas-settings');
@@ -496,31 +520,27 @@ button:hover { transform: translateY(-1px); }
       return '';
     }
 
-    function buildLabel() {
-      const parts = [];
-      if (state.tipo) parts.push(`<div class="label-meta">${escapeHtml(state.tipo)}</div>`);
-      if (state.nombre) parts.push(`<div class="label-title">${escapeHtml(state.nombre)}</div>`);
-      if (state.grupo || state.materia) {
-        const line = [state.grupo && `Grupo: ${state.grupo}`, state.materia && `Materia: ${state.materia}`].filter(Boolean).join(' · ');
-        parts.push(`<div class="label-sub">${escapeHtml(line)}</div>`);
-      }
-      if (state.escuela) parts.push(`<div class="label-meta">${escapeHtml(state.escuela)}</div>`);
-      if (state.extra) parts.push(`<div class="label-sub">${escapeHtml(state.extra)}</div>`);
-      return parts.join('');
+    function appendLabelPart(parent, className, value) {
+      const part = document.createElement('div');
+      part.className = className;
+      part.textContent = value;
+      parent.appendChild(part);
     }
 
-    function escapeHtml(value) {
-      return String(value)
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#39;');
+    function buildLabel(parent) {
+      if (state.tipo) appendLabelPart(parent, 'label-meta', state.tipo);
+      if (state.nombre) appendLabelPart(parent, 'label-title', state.nombre);
+      if (state.grupo || state.materia) {
+        const line = [state.grupo && `Grupo: ${state.grupo}`, state.materia && `Materia: ${state.materia}`].filter(Boolean).join(' · ');
+        appendLabelPart(parent, 'label-sub', line);
+      }
+      if (state.escuela) appendLabelPart(parent, 'label-meta', state.escuela);
+      if (state.extra) appendLabelPart(parent, 'label-sub', state.extra);
     }
 
     function generateQrDataUrl(text) {
       return new Promise((resolve) => {
-        hiddenQr.innerHTML = '';
+        hiddenQr.replaceChildren();
         if (!text) {
           resolve('');
           return;
@@ -553,7 +573,7 @@ button:hover { transform: translateY(-1px); }
       if (error) {
         mensaje.className = 'error';
         mensaje.textContent = error;
-        sheet.innerHTML = '';
+        sheet.replaceChildren();
         resumen.textContent = '0 etiquetas';
         return;
       }
@@ -567,21 +587,26 @@ button:hover { transform: translateY(-1px); }
       sheet.style.textAlign = state.alineacion;
 
       const qrUrl = state.usarQr ? await generateQrDataUrl(state.qrTexto) : '';
-      const cards = [];
-      const qrHtml = qrUrl ? `<div class="label-qr"><img src="${qrUrl}" alt="Código QR"></div>` : '';
       const alignmentClass = `align-${state.alineacion}`;
-      const content = buildLabel();
-
+      sheet.replaceChildren();
       for (let i = 0; i < state.cantidad; i++) {
-        cards.push(`
-          <article class="label-card ${alignmentClass}">
-            <div class="label-main">${content}</div>
-            ${qrHtml}
-          </article>
-        `);
+        const card = document.createElement('article');
+        card.className = `label-card ${alignmentClass}`;
+        const main = document.createElement('div');
+        main.className = 'label-main';
+        buildLabel(main);
+        card.appendChild(main);
+        if (qrUrl) {
+          const qrContainer = document.createElement('div');
+          qrContainer.className = 'label-qr';
+          const qrImage = document.createElement('img');
+          qrImage.src = qrUrl;
+          qrImage.alt = 'Código QR';
+          qrContainer.appendChild(qrImage);
+          card.appendChild(qrContainer);
+        }
+        sheet.appendChild(card);
       }
-
-      sheet.innerHTML = cards.join('');
       resumen.textContent = `${state.cantidad} etiqueta${state.cantidad === 1 ? '' : 's'}`;
       savePreferences();
     }
@@ -606,10 +631,10 @@ button:hover { transform: translateY(-1px); }
         });
       });
 
-      elements.btnGenerar.addEventListener('click', render);
-      elements.btnDescargar.addEventListener('click', downloadPdf);
-      elements.btnImprimir.addEventListener('click', printSheet);
-      elements.btnBorrar.addEventListener('click', clearPreferences);
+      btnGenerar.addEventListener('click', render);
+      btnDescargar.addEventListener('click', downloadPdf);
+      btnImprimir.addEventListener('click', printSheet);
+      btnBorrar.addEventListener('click', clearPreferences);
     }
 
     function hydrateInitialUi() {

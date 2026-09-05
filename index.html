@@ -88,39 +88,6 @@
 			text-align: center;
 		}
 
-		.google-mark {
-			display: inline-flex;
-			gap: 1px;
-			font-weight: 700;
-			font-size: 0.95rem;
-			letter-spacing: 0.02em;
-			text-transform: uppercase;
-		}
-
-		.google-mark span:nth-child(1) {
-			color: var(--blue);
-		}
-
-		.google-mark span:nth-child(2) {
-			color: var(--red);
-		}
-
-		.google-mark span:nth-child(3) {
-			color: var(--yellow);
-		}
-
-		.google-mark span:nth-child(4) {
-			color: var(--blue);
-		}
-
-		.google-mark span:nth-child(5) {
-			color: var(--green);
-		}
-
-		.google-mark span:nth-child(6) {
-			color: var(--red);
-		}
-
 		.search-row {
 			display: grid;
 			gap: 8px;
@@ -328,14 +295,13 @@
 	<div class="wrap">
 		<header class="header">
 			<div class="title">
-				<div class="google-mark" aria-hidden="true">
-				</div>
-				<h1>Herramientas</h1>
-				<p>Listado de herramientas del proyecto.</p>
+				<h1>Generar-QR: herramientas web gratuitas</h1>
+				<p>Herramientas sencillas para clases, textos y tareas cotidianas.</p>
 				<p class="site-description">
-					Generar-QR es una colección de herramientas web gratuitas para crear,
-					organizar y facilitar diferentes tareas de forma rápida y sencilla.
-					No necesitas instalar programas para utilizar nuestras herramientas.
+					Generar-QR reúne herramientas gratuitas para crear códigos QR,
+					organizar equipos y grupos, preparar materiales educativos,
+					trabajar con textos y generar enlaces. Todo funciona desde el
+					navegador, sin instalar programas ni crear una cuenta.
 				</p>
 			</div>
 
@@ -348,101 +314,83 @@
 					<h2>Listado de herramientas</h2>
 					<p class="meta">Selecciona una herramienta para abrirla.</p>
 				</div>
-				<div class="meta" id="count">1 herramienta</div>
+				<div class="meta" id="count">11 herramientas</div>
 			</div>
 
 			<div class="tools" id="toolsList">
-				<article class="tool" data-search="qr html codigo qr generador" role="link" tabindex="0"
-					data-href="QR.html" aria-label="Abrir QR sin vencimiento">
+				<a class="tool" data-search="qr html codigo qr generador" href="QR.html" aria-label="Abrir generador de QR">
 					<span class="tag">Principal</span>
 					<div>
 						<h3>Generador de QR sin vencimiento</h3>
-						<p class="tool-description">Abre el generador de codigo QR sin vencimiento.</p>
+						<p class="tool-description">Crea códigos QR estáticos para textos y enlaces.</p>
 					</div>
-				</article>
-				<article class="tool" data-search="equipos aleatorios profesores sorteo clases" role="link" tabindex="0"
-					data-href="equipos.html" aria-label="Abrir generador de equipos">
-					<span class="tag">Nuevo</span>
+				</a>
+				<a class="tool" data-search="equipos aleatorios profesores sorteo clases" href="equipos.html" aria-label="Abrir generador de equipos">
 					<div>
 						<h3>Generador de equipos</h3>
 						<p class="tool-description">Reparte alumnos o nombres en equipos al azar.</p>
 					</div>
-				</article>
-				<article class="tool" data-search="grupos aleatorios actividades alumnos clase" role="link" tabindex="0"
-					data-href="grupos.html" aria-label="Abrir generador de grupos aleatorios">
-					<span class="tag">Nuevo</span>
+				</a>
+				<a class="tool" data-search="grupos aleatorios actividades alumnos clase" href="grupos.html" aria-label="Abrir generador de grupos aleatorios">
 					<div>
 						<h3>Generador de grupos aleatorios</h3>
-						<p class="tool-description">Crea grupos automaticamente para actividades.</p>
+						<p class="tool-description">Crea grupos automáticamente para actividades.</p>
 					</div>
-				</article>
-				<article class="tool" data-search="temporizador clases cuenta regresiva tiempo" role="link" tabindex="0"
-					data-href="temporizador.html" aria-label="Abrir temporizador para clases">
-					<span class="tag">Nuevo</span>
+				</a>
+				<a class="tool" data-search="temporizador clases cuenta regresiva tiempo" href="temporizador.html" aria-label="Abrir temporizador para clases">
 					<div>
 						<h3>Temporizador para clases</h3>
-						<p class="tool-description">Cuenta regresiva sencilla con tiempos rapidos.</p>
+						<p class="tool-description">Cuenta regresiva sencilla con tiempos rápidos.</p>
 					</div>
-				</article>
-				<article class="tool" data-search="ruleta nombres sorteo random clases alumnos" role="link" tabindex="0"
-					data-href="ruleta.html" aria-label="Abrir ruleta de nombres">
-					<span class="tag">Nuevo</span>
+				</a>
+				<a class="tool" data-search="ruleta nombres sorteo random clases alumnos" href="ruleta.html" aria-label="Abrir ruleta de nombres">
 					<div>
 						<h3>Ruleta de nombres</h3>
 						<p class="tool-description">Gira y elige un nombre al azar para participar o responder.</p>
 					</div>
-				</article>
-				<article class="tool" data-search="sopa de letras palabras descargar pdf educativo" role="link"
-					tabindex="0" data-href="sopa.html" aria-label="Abrir generador de sopa de letras">
-					<span class="tag">Nuevo</span>
+				</a>
+				<a class="tool" data-search="sopa de letras palabras descargar pdf educativo" href="sopa.html" aria-label="Abrir generador de sopa de letras">
 					<div>
 						<h3>Generador de sopa de letras</h3>
 						<p class="tool-description">Crea sopas de letras listas para descargar en PDF con respuestas
 							abajo.</p>
 					</div>
-				</article>
-				<article class="tool"
+				</a>
+				<a class="tool"
 					data-search="ejercicios matematicos operaciones sumas restas multiplicaciones divisiones"
-					role="link" tabindex="0" data-href="matematicas.html"
+					href="matematicas.html"
 					aria-label="Abrir generador de ejercicios matematicos">
-					<span class="tag">Nuevo</span>
 					<div>
-						<h3>Generador de ejercicios matematicos</h3>
-						<p class="tool-description">Genera cuentas y hojas de practica de forma rapida.</p>
+						<h3>Generador de ejercicios matemáticos</h3>
+						<p class="tool-description">Genera cuentas y hojas de práctica rápidamente.</p>
 					</div>
-				</article>
-				<article class="tool" data-search="examenes preguntas respuestas respuestas correctas descargar pdf"
-					role="link" tabindex="0" data-href="examenes.html" aria-label="Abrir generador de examenes">
-					<span class="tag">Nuevo</span>
+				</a>
+				<a class="tool" data-search="examenes preguntas respuestas respuestas correctas descargar pdf"
+					href="examenes.html" aria-label="Abrir generador de exámenes">
 					<div>
-						<h3>Generador de examenes</h3>
+						<h3>Generador de exámenes</h3>
 						<p class="tool-description">Convierte preguntas en examen y hoja de respuestas.</p>
 					</div>
-				</article>
-				<article class="tool" data-search="contador de palabras texto letras lineas estadisticas" role="link"
-					tabindex="0" data-href="palabras.html" aria-label="Abrir contador de palabras">
-					<span class="tag">Nuevo</span>
+				</a>
+				<a class="tool" data-search="contador de palabras texto letras lineas estadisticas" href="palabras.html" aria-label="Abrir contador de palabras">
 					<div>
 						<h3>Contador de palabras</h3>
-						<p class="tool-description">Cuenta palabras, letras y lineas en tiempo real.</p>
+						<p class="tool-description">Cuenta palabras, letras y líneas en tiempo real.</p>
 					</div>
-				</article>
-				<article class="tool" data-search="whatsapp enlace mensaje compartir telefono" role="link" tabindex="0"
-					data-href="whatsapp.html" aria-label="Abrir generador de enlace de WhatsApp">
-					<span class="tag">Nuevo</span>
+				</a>
+				<a class="tool" data-search="whatsapp enlace mensaje compartir telefono" href="whatsapp.html" aria-label="Abrir generador de enlace de WhatsApp">
 					<div>
 						<h3>Generador de enlace de WhatsApp</h3>
 						<p class="tool-description">Crea enlaces directos con mensaje para abrir WhatsApp.</p>
 					</div>
-				</article>
-				<article class="tool" data-search="etiquetas libretas material expedientes carpetas cajones cajas"
-					role="link" tabindex="0" data-href="etiquetas.html" aria-label="Abrir generador de etiquetas">
-					<span class="tag">Nuevo</span>
+				</a>
+				<a class="tool" data-search="etiquetas libretas material expedientes carpetas cajones cajas"
+					href="etiquetas.html" aria-label="Abrir generador de etiquetas">
 					<div>
 						<h3>Generador de etiquetas</h3>
 						<p class="tool-description">Crea etiquetas listas para imprimir y descargar en PDF.</p>
 					</div>
-				</article>
+				</a>
 			</div>
 
 			<div class="empty" id="emptyState" style="display: none;">No hay resultados para esa busqueda.</div>
@@ -452,35 +400,19 @@
 
 			
 			<footer class="site-footer">
-    <a href="privacidad.html">Política de privacidad</a>
-    <span>·</span>
-    <a href="terminos.html">Términos y condiciones</a>
-    <span>·</span>
-    <a href="contacto.html">Contacto</a>
-</footer>
+				<a href="privacidad.html">Política de privacidad</a>
+				<span>·</span>
+				<a href="terminos.html">Términos y condiciones</a>
+				<span>·</span>
+				<a href="contacto.html">Contacto</a>
+			</footer>
+		</main>
 	</div>
 
 	<script>
 		const toolsList = document.getElementById('toolsList');
 		const count = document.getElementById('count');
 		const tools = Array.from(toolsList.querySelectorAll('.tool'));
-
-		function openTool(tool) {
-			const href = tool.dataset.href;
-			if (href) {
-				window.location.href = href;
-			}
-		}
-
-		tools.forEach((tool) => {
-			tool.addEventListener('click', () => openTool(tool));
-			tool.addEventListener('keydown', (event) => {
-				if (event.key === 'Enter' || event.key === ' ') {
-					event.preventDefault();
-					openTool(tool);
-				}
-			});
-		});
 
 		count.textContent = `${tools.length} herramientas`;
 	</script>

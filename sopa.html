@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generador de sopa de letras</title>
+  <title>Generador de sopas de letras imprimibles | Generar-QR</title>
+  <meta name="description" content="Crea sopas de letras personalizadas con respuestas para imprimir o guardar como PDF.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://brandonmatla.github.io/Generar-QR/sopa.html">
 <style>
 :root {
   --bg: #f8f9fa;
@@ -48,6 +51,7 @@ textarea, input, button { width: 100%; border-radius: 14px; border: 1px solid va
 textarea { min-height: 240px; resize: vertical; outline: none; }
 textarea:focus, input:focus { border-color: rgba(66, 133, 244, 0.55); box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.12); }
 button { cursor: pointer; font-weight: 700; margin-top: 10px; }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid rgba(66, 133, 244, 0.3); outline-offset: 2px; }
 .primary { background: var(--blue); color: white; border: none; }
 .secondary { background: #f8f9fa; color: var(--text); }
 
@@ -108,24 +112,37 @@ GITHUB</textarea>
           <label for="tamano" style="margin-top:12px;">Tamaño de la sopa</label>
           <input id="tamano" type="number" min="8" max="24" value="12">
           <button class="primary" type="button" onclick="generarSopa()">🧩 Generar sopa de letras</button>
-          <button class="secondary" type="button" onclick="window.print()">Descargar</button>
+          <button class="secondary" type="button" onclick="window.print()">Imprimir o guardar como PDF</button>
           <div class="note">Tip: usa palabras en mayúsculas para una mejor presentación.</div>
         </div>
 
         <div class="grid-wrap">
           <div class="card">
-            <div class="word-list" id="listaPalabras"></div>
+            <div class="word-list" id="listaPalabras" aria-live="polite"></div>
           </div>
           <div class="card">
-            <div class="grid" id="sopaGrid"></div>
+            <div class="grid" id="sopaGrid" aria-label="Sopa de letras generada"></div>
           </div>
           <div class="card">
             <h2 style="margin:0 0 10px; font-size:1.15rem;">Respuestas</h2>
-            <div class="grid" id="respuestasGrid"></div>
+            <div class="grid" id="respuestasGrid" aria-label="Solución de la sopa de letras"></div>
             <div class="note">Las palabras marcadas en azul muestran la solución.</div>
           </div>
         </div>
       </div>
+      <section class="help-content">
+        <h2>Cómo crear una sopa</h2>
+        <p>Escribe una palabra por línea, elige un tamaño entre 8 y 24 casillas y pulsa “Generar sopa de letras”. Las palabras se colocan en distintas direcciones y las casillas restantes se rellenan con letras aleatorias.</p>
+        <h2>Palabras que no caben</h2>
+        <p>Una palabra más larga que el tamaño elegido no puede colocarse y se omite de la cuadrícula. Para obtener una actividad completa, usa palabras cortas o aumenta el tamaño de la sopa.</p>
+        <h2>Impresión</h2>
+        <p>La vista muestra primero el ejercicio y después una cuadrícula con las respuestas marcadas. Usa “Imprimir o guardar como PDF” para conservar ambas partes.</p>
+        <h2>Preguntas frecuentes</h2>
+        <h3>¿Cuántas palabras puedo introducir?</h3>
+        <p>La herramienta procesa hasta 40 palabras por generación para mantener una cuadrícula manejable.</p>
+        <h3>¿Se guardan las palabras?</h3>
+        <p>No. Se procesan localmente mientras la página está abierta.</p>
+      </section>
     </section>
   </div>
 
@@ -183,13 +200,14 @@ GITHUB</textarea>
       const palabras = document.getElementById('palabras').value
         .split(/\n|,/) 
         .map((p) => p.trim().toUpperCase())
-        .filter(Boolean);
+        .filter(Boolean)
+        .slice(0, 40);
       const size = Math.max(8, Math.min(24, parseInt(document.getElementById('tamano').value, 10) || 12));
       const grid = Array.from({ length: size }, () => Array(size).fill(''));
       const placements = [];
       const sorted = [...palabras].sort((a, b) => b.length - a.length);
 
-      sorted.forEach((word) => placeWord(grid, word, placements));
+      sorted.filter((word) => word.length <= size).forEach((word) => placeWord(grid, word, placements));
 
       for (let row = 0; row < size; row++) {
         for (let col = 0; col < size; col++) {
@@ -202,15 +220,33 @@ GITHUB</textarea>
       const answersEl = document.getElementById('respuestasGrid');
 
       gridEl.style.gridTemplateColumns = `repeat(${size}, minmax(0, 1fr))`;
-      gridEl.innerHTML = grid.map((row) => row.map((cell) => `<div class="cell">${cell}</div>`).join('')).join('');
-      listEl.innerHTML = palabras.map((word) => `<span class="word-tag">${word}</span>`).join('');
+      gridEl.replaceChildren();
+      grid.forEach((row) => row.forEach((cell) => {
+        const cellEl = document.createElement('div');
+        cellEl.className = 'cell';
+        cellEl.textContent = cell;
+        gridEl.appendChild(cellEl);
+      }));
+      listEl.replaceChildren();
+      palabras.forEach((word) => {
+        const tag = document.createElement('span');
+        tag.className = 'word-tag';
+        tag.textContent = word;
+        listEl.appendChild(tag);
+      });
 
       const highlighted = new Set(placements.flatMap((entry) => entry.positions.map(([x, y]) => `${x}-${y}`)));
       answersEl.style.gridTemplateColumns = `repeat(${size}, minmax(0, 1fr))`;
-      answersEl.innerHTML = grid.map((row, rowIndex) => row.map((cell, colIndex) => {
+      answersEl.replaceChildren();
+      grid.forEach((row, rowIndex) => row.forEach((cell, colIndex) => {
         const active = highlighted.has(`${rowIndex}-${colIndex}`);
-        return `<div class="cell" style="background:${active ? '#e8f0fe' : '#ffffff'}; color:${active ? '#174ea6' : '#202124'};">${cell}</div>`;
-      }).join('')).join('');
+        const cellEl = document.createElement('div');
+        cellEl.className = 'cell';
+        cellEl.style.background = active ? '#e8f0fe' : '#ffffff';
+        cellEl.style.color = active ? '#174ea6' : '#202124';
+        cellEl.textContent = cell;
+        answersEl.appendChild(cellEl);
+      }));
     }
 
     generarSopa();
