@@ -1,276 +1,328 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Herramientas</title>
-<style>
-:root {
-	--bg: #f8f9fa;
-	--panel: #ffffff;
-	--border: #dadce0;
-	--text: #202124;
-	--muted: #5f6368;
-	--blue: #4285f4;
-	--red: #ea4335;
-	--yellow: #fbbc05;
-	--green: #34a853;
-}
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Generar-QR | Generador de códigos QR y herramientas gratuitas</title>
+	<meta name="description"
+		content="Generar-QR ofrece herramientas gratuitas para crear códigos QR, equipos, grupos, etiquetas, exámenes, sopas de letras y más.">
+	<meta name="robots" content="index, follow">
+	<style>
+		:root {
+			--bg: #f8f9fa;
+			--panel: #ffffff;
+			--border: #dadce0;
+			--text: #202124;
+			--muted: #5f6368;
+			--blue: #4285f4;
+			--red: #ea4335;
+			--yellow: #fbbc05;
+			--green: #34a853;
+		}
 
-* {
-	box-sizing: border-box;
-}
+		* {
+			box-sizing: border-box;
+		}
 
-body {
-	margin: 0;
-	min-height: 100vh;
-	font-family: Arial, Helvetica, sans-serif;
-	color: var(--text);
-	background: var(--bg);
-}
+		body {
+			margin: 0;
+			min-height: 100vh;
+			font-family: Arial, Helvetica, sans-serif;
+			color: var(--text);
+			background: var(--bg);
+		}
 
-.wrap {
-	width: min(980px, calc(100% - 24px));
-	margin: 0 auto;
-	padding: 28px 0 44px;
-}
+		.wrap {
+			width: min(980px, calc(100% - 24px));
+			margin: 0 auto;
+			padding: 28px 0 44px;
+		}
 
-.header,
-.panel {
-	border: 1px solid var(--border);
-	border-radius: 24px;
-	background: var(--panel);
-	box-shadow: 0 1px 3px rgba(60, 64, 67, 0.16), 0 4px 12px rgba(60, 64, 67, 0.08);
-}
+		.header,
+		.panel {
+			border: 1px solid var(--border);
+			border-radius: 24px;
+			background: var(--panel);
+			box-shadow: 0 1px 3px rgba(60, 64, 67, 0.16), 0 4px 12px rgba(60, 64, 67, 0.08);
+		}
 
-.header {
-	padding: 26px 26px 22px;
-	display: grid;
-	gap: 16px;
-	max-width: 760px;
-	margin: 0 auto;
-	border-radius: 28px;
-}
+		.header {
+			padding: 26px 26px 22px;
+			display: grid;
+			gap: 16px;
+			max-width: 760px;
+			margin: 0 auto;
+			border-radius: 28px;
+		}
 
-.title {
-	display: grid;
-	gap: 10px;
-	justify-items: center;
-	text-align: center;
-}
+		.title {
+			display: grid;
+			gap: 10px;
+			justify-items: center;
+			text-align: center;
+		}
 
-.title h1 {
-	margin: 0;
-	font-size: clamp(2.4rem, 6vw, 4.3rem);
-	font-weight: 700;
-	letter-spacing: -0.03em;
-}
+		.title h1 {
+			margin: 0;
+			font-size: clamp(2.4rem, 6vw, 4.3rem);
+			font-weight: 700;
+			letter-spacing: -0.03em;
+		}
 
-.title p,
-.meta,
-.tool-description,
-.empty {
-	margin: 0;
-	color: var(--muted);
-}
+		.title p,
+		.meta,
+		.tool-description,
+		.empty {
+			margin: 0;
+			color: var(--muted);
+		}
 
-.google-mark {
-	display: inline-flex;
-	gap: 1px;
-	font-weight: 700;
-	font-size: 0.95rem;
-	letter-spacing: 0.02em;
-	text-transform: uppercase;
-}
+		.site-description {
+			max-width: 680px;
+			margin: 0 auto;
+			color: var(--muted);
+			line-height: 1.6;
+			font-size: 0.98rem;
+			text-align: center;
+		}
 
-.google-mark span:nth-child(1) { color: var(--blue); }
-.google-mark span:nth-child(2) { color: var(--red); }
-.google-mark span:nth-child(3) { color: var(--yellow); }
-.google-mark span:nth-child(4) { color: var(--blue); }
-.google-mark span:nth-child(5) { color: var(--green); }
-.google-mark span:nth-child(6) { color: var(--red); }
+		.google-mark {
+			display: inline-flex;
+			gap: 1px;
+			font-weight: 700;
+			font-size: 0.95rem;
+			letter-spacing: 0.02em;
+			text-transform: uppercase;
+		}
 
-.search-row {
-	display: grid;
-	gap: 8px;
-	max-width: 640px;
-	width: 100%;
-	margin: 0 auto;
-}
+		.google-mark span:nth-child(1) {
+			color: var(--blue);
+		}
 
-.search-row label {
-	font-size: 0.92rem;
-	color: var(--muted);
-	padding-left: 12px;
-}
+		.google-mark span:nth-child(2) {
+			color: var(--red);
+		}
 
-.search-row input {
-	width: 100%;
-	padding: 16px 18px;
-	border-radius: 999px;
-	border: 1px solid #dfe1e5;
-	background: #ffffff;
-	color: var(--text);
-	outline: none;
-	font-size: 1rem;
-	box-shadow: 0 1px 6px rgba(32, 33, 36, 0.12);
-	transition: box-shadow 0.18s ease, border-color 0.18s ease;
-}
+		.google-mark span:nth-child(3) {
+			color: var(--yellow);
+		}
 
-.search-row input::placeholder {
-	color: #80868b;
-	font-size: 0.98rem;
-}
+		.google-mark span:nth-child(4) {
+			color: var(--blue);
+		}
 
-.search-row input:focus {
-	border-color: rgba(66, 133, 244, 0.55);
-	box-shadow: 0 1px 8px rgba(66, 133, 244, 0.18);
-}
+		.google-mark span:nth-child(5) {
+			color: var(--green);
+		}
 
-.panel {
-	margin-top: 22px;
-	padding: 24px;
-}
+		.google-mark span:nth-child(6) {
+			color: var(--red);
+		}
 
-.section-head {
-	display: flex;
-	justify-content: space-between;
-	gap: 14px;
-	align-items: center;
-	flex-wrap: wrap;
-	margin-bottom: 16px;
-}
+		.search-row {
+			display: grid;
+			gap: 8px;
+			max-width: 640px;
+			width: 100%;
+			margin: 0 auto;
+		}
 
-.section-head h2 {
-	margin: 0;
-	font-size: 1.15rem;
-	font-weight: 700;
-}
+		.search-row label {
+			font-size: 0.92rem;
+			color: var(--muted);
+			padding-left: 12px;
+		}
 
-.tools {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-	gap: 14px;
-}
+		.search-row input {
+			width: 100%;
+			padding: 16px 18px;
+			border-radius: 999px;
+			border: 1px solid #dfe1e5;
+			background: #ffffff;
+			color: var(--text);
+			outline: none;
+			font-size: 1rem;
+			box-shadow: 0 1px 6px rgba(32, 33, 36, 0.12);
+			transition: box-shadow 0.18s ease, border-color 0.18s ease;
+		}
 
-.tool {
-	display: grid;
-	gap: 12px;
-	padding: 18px;
-	border-radius: 20px;
-	border: 1px solid #dadce0;
-	background: #ffffff;
-	box-shadow: 0 1px 3px rgba(60, 64, 67, 0.12);
-	cursor: pointer;
-	transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-}
+		.search-row input::placeholder {
+			color: #80868b;
+			font-size: 0.98rem;
+		}
 
-.tool h3 {
-	margin: 0;
-	font-size: 1.05rem;
-}
+		.search-row input:focus {
+			border-color: rgba(66, 133, 244, 0.55);
+			box-shadow: 0 1px 8px rgba(66, 133, 244, 0.18);
+		}
 
-.tool:hover {
-	transform: translateY(-1px);
-	border-color: #c6dafc;
-	box-shadow: 0 2px 8px rgba(60, 64, 67, 0.14);
-}
+		.panel {
+			margin-top: 22px;
+			padding: 24px;
+		}
 
-.tool:focus-visible {
-	outline: none;
-	box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.18), 0 2px 8px rgba(60, 64, 67, 0.14);
-}
+		.section-head {
+			display: flex;
+			justify-content: space-between;
+			gap: 14px;
+			align-items: center;
+			flex-wrap: wrap;
+			margin-bottom: 16px;
+		}
 
-.tag {
-	display: inline-flex;
-	width: fit-content;
-	padding: 5px 10px;
-	border-radius: 999px;
-	background: #e8f0fe;
-	color: var(--blue);
-	font-size: 0.8rem;
-	font-weight: 700;
-}
+		.section-head h2 {
+			margin: 0;
+			font-size: 1.15rem;
+			font-weight: 700;
+		}
+
+		.tools {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+			gap: 14px;
+		}
+
+		.tool {
+			display: grid;
+			gap: 12px;
+			padding: 18px;
+			border-radius: 20px;
+			border: 1px solid #dadce0;
+			background: #ffffff;
+			box-shadow: 0 1px 3px rgba(60, 64, 67, 0.12);
+			cursor: pointer;
+			transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+		}
+
+		.tool h3 {
+			margin: 0;
+			font-size: 1.05rem;
+		}
+
+		.tool:hover {
+			transform: translateY(-1px);
+			border-color: #c6dafc;
+			box-shadow: 0 2px 8px rgba(60, 64, 67, 0.14);
+		}
+
+		.tool:focus-visible {
+			outline: none;
+			box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.18), 0 2px 8px rgba(60, 64, 67, 0.14);
+		}
+
+		.tag {
+			display: inline-flex;
+			width: fit-content;
+			padding: 5px 10px;
+			border-radius: 999px;
+			background: #e8f0fe;
+			color: var(--blue);
+			font-size: 0.8rem;
+			font-weight: 700;
+		}
 
 
-.search-row input:focus-visible {
-	outline: none;
-	outline: 3px solid rgba(66, 133, 244, 0.2);
-	outline-offset: 2px;
-}
+		.search-row input:focus-visible {
+			outline: none;
+			outline: 3px solid rgba(66, 133, 244, 0.2);
+			outline-offset: 2px;
+		}
 
-.empty {
-	display: none;
-	margin-top: 14px;
-	padding: 16px;
-	border-radius: 16px;
-	border: 1px dashed #dadce0;
-	background: #fafafa;
-}
+		.empty {
+			display: none;
+			margin-top: 14px;
+			padding: 16px;
+			border-radius: 16px;
+			border: 1px dashed #dadce0;
+			background: #fafafa;
+		}
 
-.footer-note {
-	margin-top: 14px;
-	color: var(--muted);
-	font-size: 0.92rem;
-	text-align: center;
-}
+		.footer-note {
+			margin-top: 14px;
+			color: var(--muted);
+			font-size: 0.92rem;
+			text-align: center;
+		}
 
-@media (max-width: 640px) {
-	.wrap {
-		width: min(100% - 14px, 980px);
-		padding-top: 10px;
-	}
+		@media (max-width: 640px) {
+			.wrap {
+				width: min(100% - 14px, 980px);
+				padding-top: 10px;
+			}
 
-	.header,
-	.panel {
-		padding: 16px;
-		border-radius: 18px;
-	}
+			.header,
+			.panel {
+				padding: 16px;
+				border-radius: 18px;
+			}
 
-	.title h1 {
-		font-size: clamp(2rem, 12vw, 3rem);
-	}
+			.title h1 {
+				font-size: clamp(2rem, 12vw, 3rem);
+			}
 
-	.title {
-		gap: 8px;
-	}
+			.title {
+				gap: 8px;
+			}
 
-	.search-row input {
-		padding: 14px 16px;
-	}
+			.search-row input {
+				padding: 14px 16px;
+			}
 
-	.section-head {
-		align-items: flex-start;
-	}
+			.section-head {
+				align-items: flex-start;
+			}
 
-	.tools {
-		grid-template-columns: 1fr;
-	}
+			.tools {
+				grid-template-columns: 1fr;
+			}
 
-	.tool {
-		padding: 16px;
-	}
+			.tool {
+				padding: 16px;
+			}
 
-	.footer-note {
-		text-align: left;
-	}
-}
+			.footer-note {
+				text-align: left;
+			}
+		}
 
-@media (min-width: 641px) and (max-width: 860px) {
-	.tools {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
+		@media (min-width: 641px) and (max-width: 860px) {
+			.tools {
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+			}
 
-	.header {
-		padding: 24px 22px 20px;
-	}
+			.header {
+				padding: 24px 22px 20px;
+			}
 
-	.panel {
-		padding: 22px;
-	}
-}
-</style>
+			.panel {
+				padding: 22px;
+			}
+		}
+
+		.site-footer {
+			margin-top: 24px;
+			padding-top: 20px;
+			border-top: 1px solid var(--border);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			gap: 10px;
+			flex-wrap: wrap;
+			font-size: 0.9rem;
+		}
+
+		.site-footer a {
+			color: var(--blue);
+			text-decoration: none;
+		}
+
+		.site-footer a:hover {
+			text-decoration: underline;
+		}
+	</style>
 </head>
+
 <body>
 	<div class="wrap">
 		<header class="header">
@@ -279,9 +331,14 @@ body {
 				</div>
 				<h1>Herramientas</h1>
 				<p>Listado de herramientas del proyecto.</p>
+				<p class="site-description">
+					Generar-QR es una colección de herramientas web gratuitas para crear,
+					organizar y facilitar diferentes tareas de forma rápida y sencilla.
+					No necesitas instalar programas para utilizar nuestras herramientas.
+				</p>
 			</div>
 
-			
+
 		</header>
 
 		<main class="panel">
@@ -294,77 +351,91 @@ body {
 			</div>
 
 			<div class="tools" id="toolsList">
-				<article class="tool" data-search="qr html codigo qr generador" role="link" tabindex="0" data-href="QR.html" aria-label="Abrir QR sin vencimiento">
+				<article class="tool" data-search="qr html codigo qr generador" role="link" tabindex="0"
+					data-href="QR.html" aria-label="Abrir QR sin vencimiento">
 					<span class="tag">Principal</span>
 					<div>
 						<h3>Generador de QR sin vencimiento</h3>
 						<p class="tool-description">Abre el generador de codigo QR sin vencimiento.</p>
 					</div>
 				</article>
-				<article class="tool" data-search="equipos aleatorios profesores sorteo clases" role="link" tabindex="0" data-href="equipos.html" aria-label="Abrir generador de equipos">
+				<article class="tool" data-search="equipos aleatorios profesores sorteo clases" role="link" tabindex="0"
+					data-href="equipos.html" aria-label="Abrir generador de equipos">
 					<span class="tag">Nuevo</span>
 					<div>
 						<h3>Generador de equipos</h3>
 						<p class="tool-description">Reparte alumnos o nombres en equipos al azar.</p>
 					</div>
 				</article>
-				<article class="tool" data-search="grupos aleatorios actividades alumnos clase" role="link" tabindex="0" data-href="grupos.html" aria-label="Abrir generador de grupos aleatorios">
+				<article class="tool" data-search="grupos aleatorios actividades alumnos clase" role="link" tabindex="0"
+					data-href="grupos.html" aria-label="Abrir generador de grupos aleatorios">
 					<span class="tag">Nuevo</span>
 					<div>
 						<h3>Generador de grupos aleatorios</h3>
 						<p class="tool-description">Crea grupos automaticamente para actividades.</p>
 					</div>
 				</article>
-				<article class="tool" data-search="temporizador clases cuenta regresiva tiempo" role="link" tabindex="0" data-href="temporizador.html" aria-label="Abrir temporizador para clases">
+				<article class="tool" data-search="temporizador clases cuenta regresiva tiempo" role="link" tabindex="0"
+					data-href="temporizador.html" aria-label="Abrir temporizador para clases">
 					<span class="tag">Nuevo</span>
 					<div>
 						<h3>Temporizador para clases</h3>
 						<p class="tool-description">Cuenta regresiva sencilla con tiempos rapidos.</p>
 					</div>
 				</article>
-				<article class="tool" data-search="ruleta nombres sorteo random clases alumnos" role="link" tabindex="0" data-href="ruleta.html" aria-label="Abrir ruleta de nombres">
+				<article class="tool" data-search="ruleta nombres sorteo random clases alumnos" role="link" tabindex="0"
+					data-href="ruleta.html" aria-label="Abrir ruleta de nombres">
 					<span class="tag">Nuevo</span>
 					<div>
 						<h3>Ruleta de nombres</h3>
 						<p class="tool-description">Gira y elige un nombre al azar para participar o responder.</p>
 					</div>
 				</article>
-				<article class="tool" data-search="sopa de letras palabras descargar pdf educativo" role="link" tabindex="0" data-href="sopa.html" aria-label="Abrir generador de sopa de letras">
+				<article class="tool" data-search="sopa de letras palabras descargar pdf educativo" role="link"
+					tabindex="0" data-href="sopa.html" aria-label="Abrir generador de sopa de letras">
 					<span class="tag">Nuevo</span>
 					<div>
 						<h3>Generador de sopa de letras</h3>
-						<p class="tool-description">Crea sopas de letras listas para descargar en PDF con respuestas abajo.</p>
+						<p class="tool-description">Crea sopas de letras listas para descargar en PDF con respuestas
+							abajo.</p>
 					</div>
 				</article>
-				<article class="tool" data-search="ejercicios matematicos operaciones sumas restas multiplicaciones divisiones" role="link" tabindex="0" data-href="matematicas.html" aria-label="Abrir generador de ejercicios matematicos">
+				<article class="tool"
+					data-search="ejercicios matematicos operaciones sumas restas multiplicaciones divisiones"
+					role="link" tabindex="0" data-href="matematicas.html"
+					aria-label="Abrir generador de ejercicios matematicos">
 					<span class="tag">Nuevo</span>
 					<div>
 						<h3>Generador de ejercicios matematicos</h3>
 						<p class="tool-description">Genera cuentas y hojas de practica de forma rapida.</p>
 					</div>
 				</article>
-				<article class="tool" data-search="examenes preguntas respuestas respuestas correctas descargar pdf" role="link" tabindex="0" data-href="examenes.html" aria-label="Abrir generador de examenes">
+				<article class="tool" data-search="examenes preguntas respuestas respuestas correctas descargar pdf"
+					role="link" tabindex="0" data-href="examenes.html" aria-label="Abrir generador de examenes">
 					<span class="tag">Nuevo</span>
 					<div>
 						<h3>Generador de examenes</h3>
 						<p class="tool-description">Convierte preguntas en examen y hoja de respuestas.</p>
 					</div>
 				</article>
-				<article class="tool" data-search="contador de palabras texto letras lineas estadisticas" role="link" tabindex="0" data-href="palabras.html" aria-label="Abrir contador de palabras">
+				<article class="tool" data-search="contador de palabras texto letras lineas estadisticas" role="link"
+					tabindex="0" data-href="palabras.html" aria-label="Abrir contador de palabras">
 					<span class="tag">Nuevo</span>
 					<div>
 						<h3>Contador de palabras</h3>
 						<p class="tool-description">Cuenta palabras, letras y lineas en tiempo real.</p>
 					</div>
 				</article>
-				<article class="tool" data-search="whatsapp enlace mensaje compartir telefono" role="link" tabindex="0" data-href="whatsapp.html" aria-label="Abrir generador de enlace de WhatsApp">
+				<article class="tool" data-search="whatsapp enlace mensaje compartir telefono" role="link" tabindex="0"
+					data-href="whatsapp.html" aria-label="Abrir generador de enlace de WhatsApp">
 					<span class="tag">Nuevo</span>
 					<div>
 						<h3>Generador de enlace de WhatsApp</h3>
 						<p class="tool-description">Crea enlaces directos con mensaje para abrir WhatsApp.</p>
 					</div>
 				</article>
-				<article class="tool" data-search="etiquetas libretas material expedientes carpetas cajones cajas" role="link" tabindex="0" data-href="etiquetas.html" aria-label="Abrir generador de etiquetas">
+				<article class="tool" data-search="etiquetas libretas material expedientes carpetas cajones cajas"
+					role="link" tabindex="0" data-href="etiquetas.html" aria-label="Abrir generador de etiquetas">
 					<span class="tag">Nuevo</span>
 					<div>
 						<h3>Generador de etiquetas</h3>
@@ -374,7 +445,15 @@ body {
 			</div>
 
 			<div class="empty" id="emptyState" style="display: none;">No hay resultados para esa busqueda.</div>
-			<p class="footer-note">Si quieres, despues puedo agregar mas herramientas a este listado con el mismo estilo.</p>
+			<p class="footer-note">
+				Herramientas gratuitas para facilitar tus tareas diarias.
+			</p>
+
+			<footer class="site-footer">
+				<a href="terminos.html">Términos y condiciones</a>
+				<span>·</span>
+				<a href="contacto.html">Contacto</a>
+			</footer>
 		</main>
 	</div>
 
@@ -403,4 +482,5 @@ body {
 		count.textContent = `${tools.length} herramientas`;
 	</script>
 </body>
+
 </html>
