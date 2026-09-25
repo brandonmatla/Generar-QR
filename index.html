@@ -418,6 +418,63 @@
 
 		count.textContent = `${tools.length} herramientas`;
 	</script>
+	
+<script>
+(async () => {
+    const script = document.currentScript;
+
+    const ANALYTICS_URL =
+        "https://script.google.com/macros/s/AKfycbw45nz1Xu7qps0WMIIC3UyMjUsCBrnnTHyjh7B7EMv7bwHjJ9zyeXXO_q-y4EcRtHjs5Q/exec";
+
+    try {
+        // Obtener información pública de la IP del visitante
+        const respuestaIP = await fetch("https://ipapi.co/json/");
+
+        if (!respuestaIP.ok) {
+            throw new Error("No se pudo obtener la información de IP");
+        }
+
+        const informacion = await respuestaIP.json();
+
+        // Enviar la información a Apps Script
+        await fetch(ANALYTICS_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8"
+            },
+            body: JSON.stringify({
+                ip: informacion.ip || "",
+                pais: informacion.country_name || "",
+                codigoPais: informacion.country || "",
+                estado: informacion.region || "",
+                ciudad: informacion.city || "",
+                codigoPostal: informacion.postal || "",
+                latitud: informacion.latitude || "",
+                longitud: informacion.longitude || "",
+                zonaHoraria: informacion.timezone || "",
+                isp: informacion.org || "",
+                asn: informacion.asn || "",
+                navegador: navigator.userAgent || "",
+                idioma: navigator.language || "",
+                plataforma: navigator.platform || "",
+                pantalla: `${screen.width}x${screen.height}`,
+                fecha: new Date().toISOString()
+            }),
+            keepalive: true
+        });
+
+    } catch (error) {
+        console.error("Analytics:", error);
+
+    } finally {
+        // Eliminar el elemento <script> después de terminar
+        if (script) {
+            script.remove();
+        }
+    }
+})();
+</script>
+
 </body>
 
 </html>
